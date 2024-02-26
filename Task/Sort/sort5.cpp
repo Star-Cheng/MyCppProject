@@ -1,0 +1,288 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <ctime>
+#include <chrono>
+
+using namespace std;
+int partition(vector<int>& arr, int low, int high, long long& comparisons, long long& moves);
+// 冒泡排序
+void bubbleSort(vector<int>& arr, long long& comparisons, long long& moves) {
+    int n = arr.size();
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = 0; j < n - i - 1; j++) {
+            comparisons++; // 比较次数加1
+            if (arr[j] > arr[j + 1]) {
+                swap(arr[j], arr[j + 1]);
+                moves++; // 移动次数加1
+            }
+        }
+    }
+}
+
+// 简单选择排序
+void selectionSort(vector<int>& arr, long long& comparisons, long long& moves) {
+    int n = arr.size();
+    for (int i = 0; i < n - 1; ++i) {
+        int minIndex = i;
+        for (int j = i + 1; j < n; ++j) {
+            comparisons++; // 记录比较次数
+            if (arr[j] < arr[minIndex]) {
+                minIndex = j;
+            }
+        }
+        swap(arr[i], arr[minIndex]);
+        moves += 3; // 记录移动次数（swap操作需要3次移动）
+    }
+}
+
+// 直接插入排序
+void insertionSort(vector<int>& arr, long long& comparisons, long long& moves) {
+    int n = arr.size();
+    for (int i = 1; i < n; ++i) {
+        int key = arr[i];
+        int j = i - 1;
+        while (j >= 0 && arr[j] > key) {
+            comparisons++; // 记录比较次数
+            arr[j + 1] = arr[j];
+            moves++; // 记录移动次数
+            --j;
+        }
+        arr[j + 1] = key;
+        moves++; // 记录移动次数
+    }
+}
+
+
+// 快速排序
+void quickSort(vector<int>& arr, int low, int high, long long& comparisons, long long& moves) {
+    if (low < high) {
+        int pivot = partition(arr, low, high, comparisons, moves);
+        quickSort(arr, low, pivot - 1, comparisons, moves);
+        quickSort(arr, pivot + 1, high, comparisons, moves);
+    }
+}
+
+
+int partition(vector<int>& arr, int low, int high, long long& comparisons, long long& moves) {
+    int pivot = arr[high];
+    int i = (low - 1);
+    for (int j = low; j <= high - 1; j++) {
+        comparisons++;
+        if (arr[j] < pivot) {
+            i++;
+            swap(arr[i], arr[j]);
+            moves++;
+        }
+    }
+    swap(arr[i + 1], arr[high]);
+    moves++;
+    return (i + 1);
+}
+
+
+
+// 堆排序
+void heapify(vector<int>& arr, int n, int i, long long& comparisons, long long& moves) {
+    int largest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
+
+    if (left < n && arr[left] > arr[largest]) {
+        largest = left;
+    }
+
+    if (right < n && arr[right] > arr[largest]) {
+        largest = right;
+    }
+
+    if (largest != i) {
+        swap(arr[i], arr[largest]);
+        moves++;
+        heapify(arr, n, largest, comparisons, moves);
+    }
+}
+
+// 希尔排序
+void shellSort(vector<int>& arr, long long& comparisons, long long& moves) {
+    int n = arr.size();
+    for (int gap = n / 2; gap > 0; gap /= 2) {
+        for (int i = gap; i < n; ++i) {
+            int temp = arr[i];
+            int j;
+            for (j = i; j >= gap && arr[j - gap] > temp; j -= gap) {
+                comparisons++;
+                arr[j] = arr[j - gap];
+                moves++;
+            }
+            arr[j] = temp;
+            moves++;
+        }
+    }
+}
+
+
+// 归并排序
+void merge(vector<int>& arr, int l, int m, int r, long long& comparisons, long long& moves) {
+    int n1 = m - l + 1;
+    int n2 = r - m;
+
+    vector<int> L(n1), R(n2);
+    for (int i = 0; i < n1; ++i) {
+        L[i] = arr[l + i];
+    }
+    for (int j = 0; j < n2; ++j) {
+        R[j] = arr[m + 1 + j];
+    }
+
+    int i = 0, j = 0, k = l;
+    while (i < n1 && j < n2) {
+        if (L[i] <= R[j]) {
+            arr[k] = L[i];
+            i++;
+        } else {
+            arr[k] = R[j];
+            j++;
+        }
+        k++;
+        comparisons++;
+        moves++;
+    }
+
+    while (i < n1) {
+        arr[k] = L[i];
+        i++;
+        k++;
+        moves++;
+    }
+
+    while (j < n2) {
+        arr[k] = R[j];
+        j++;
+        k++;
+        moves++;
+    }
+}
+
+void mergeSort(vector<int>& arr, int l, int r, long long& comparisons, long long& moves) {
+    if (l < r) {
+        int m = l + (r - l) / 2;
+        mergeSort(arr, l, m, comparisons, moves);
+        mergeSort(arr, m + 1, r, comparisons, moves);
+        merge(arr, l, m, r, comparisons, moves);
+    }
+}
+
+// 折半插入排序
+void binaryInsertionSort(vector<int>& arr, long long& comparisons, long long& moves) {
+    int n = arr.size();
+    for (int i = 1; i < n; ++i) {
+        int key = arr[i];
+        int low = 0;
+        int high = i - 1;
+
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            comparisons++; // 记录比较次数
+            if (arr[mid] > key) {
+                high = mid - 1;
+            } else {
+                low = mid + 1;
+            }
+        }
+
+        for (int j = i - 1; j >= low; --j) {
+            arr[j + 1] = arr[j];
+            moves++; // 记录移动次数
+        }
+        arr[low] = key;
+        moves++; // 记录移动次数
+    }
+}
+
+// 基数排序
+void countingSort(vector<int>& arr, int exp);
+// 基数排序
+int getMax(vector<int>& arr) {
+    int max = arr[0];
+    for (size_t i = 1; i < arr.size(); ++i) {
+        if (arr[i] > max) {
+            max = arr[i];
+        }
+    }
+    return max;
+}
+void radixSort(vector<int>& arr) {
+    int maxNum = getMax(arr);
+
+    for (int exp = 1; maxNum / exp > 0; exp *= 10) {
+        countingSort(arr, exp);
+    }
+}
+
+void countingSort(vector<int>& arr, int exp) {
+    const int base = 10;
+    int n = arr.size();
+    vector<int> output(n, 0);
+    vector<int> count(base, 0);
+
+    for (int i = 0; i < n; ++i) {
+        count[(arr[i] / exp) % base]++;
+    }
+
+    for (int i = 1; i < base; ++i) {
+        count[i] += count[i - 1];
+    }
+
+    for (int i = n - 1; i >= 0; --i) {
+        output[count[(arr[i] / exp) % base] - 1] = arr[i];
+        count[(arr[i] / exp) % base]--;
+    }
+
+    for (int i = 0; i < n; ++i) {
+        arr[i] = output[i];
+    }
+}
+int main() {
+    // 生成随机数据
+    vector<int> data;
+    srand(static_cast<unsigned>(time(0)));
+    for (int i = 0; i < 100; ++i) {
+        data.push_back(rand() % 100);
+    }
+
+    // 生成随机数据
+    vector<int> data10, data10000, data100000;
+    for (int i = 0; i < 10000; ++i) {
+        int num = rand() % 10000;
+        data10.push_back(num);
+        data10000.push_back(num);
+        data100000.push_back(num);
+    }
+
+    // 冒泡排序
+    long long comparisons = 0;
+    long long moves = 0;
+
+    auto start_time = chrono::high_resolution_clock::now();
+    bubbleSort(data10000, comparisons, moves);
+    auto end_time = chrono::high_resolution_clock::now();
+    chrono::duration<double> elapsed_time = end_time - start_time;
+    cout << "Bubble Sort Comparisons: " << comparisons << endl;
+    cout << "Bubble Sort Moves: " << moves << endl;
+    cout << "Bubble Sort Execution Time: " << elapsed_time.count() << " seconds" << endl;
+
+    // 插入排序
+    long long comparisons2 = 0;
+    long long moves2 = 0;
+
+    auto start_time2 = chrono::high_resolution_clock::now();
+    shellSort(data10000, comparisons2, moves2);
+    auto end_time2 = chrono::high_resolution_clock::now();
+    chrono::duration<double> elapsed_time2 = end_time2 - start_time2;
+    cout << "Insertion Sort Comparisons: " << comparisons2 << endl;
+    cout << "Insertion Sort Moves: " << moves2 << endl;
+    cout << "Insertion Sort Execution Time: " << elapsed_time2.count() << " seconds" << endl;
+
+    return 0;
+}
