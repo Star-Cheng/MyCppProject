@@ -16,13 +16,13 @@ int main(){
     long long num4 = 9223372036854775807;
     cout<<num4 <<"\n";
 
-    // 2.2sizeof关键字
+    // 2.2 sizeof关键字
     cout <<"short:" << sizeof(short) << "B" <<'\n';
     cout <<"int:" << sizeof(int) << "B" <<'\n';
     cout <<"long:" << sizeof(long) << "B" <<'\n';
     cout <<"long long:" << sizeof(long long) << "B" << '\n';
 
-    // 2.3 实行(浮点型)
+    // 2.3 实型(浮点型)
     // 1. 单精度(-3.40282347E+38~3.40282347E+38)
     float f1 = 3.14f;
     cout<<f1 <<"\n";
@@ -75,6 +75,40 @@ int main(){
     cout<< "C++风格字符串:\t" <<str2 <<"\n";
 
     // 2.7 布尔类型
+    // 1.创建bool数据类型
+    bool b1 = true;
+    cout<< "bool类型:\t" <<b1 <<"\n";
+    b1 = false;
+    cout<< "bool类型:\t" <<b1 <<"\n";
+    // 2. 查看bool类型所占内存大小
+    cout << "bool所占内存大小:" << sizeof(b1) << "B" <<'\n';
+
+    // 2.8 数据输入
+    // 1. 整形
+    int a = 0;
+    cout << "请给整型变量a赋值: "<<"\n";
+    cin >> a;
+    cout << "a的值为:" << a <<"\n";
+    // 2. 浮点型
+    float b = 0;
+    cout << "请给浮点型变量b赋值: "<<"\n";
+    cin >> b;
+    cout << "b的值为:" << b <<"\n";
+    // 3. 字符型
+    char c = 'a';
+    cout << "请给字符型变量c赋值: "<<"\n";
+    cin >> c;
+    cout << "c的值为:" << c <<"\n";
+    // 4. 字符串型
+    string d = "";
+    cout << "请给字符串型变量d赋值: "<<"\n";
+    cin >> d;
+    cout << "d的值为:" << d <<"\n";
+    // 5. 布尔型
+    bool e = false;
+    cout << "请给布尔型变量e赋值: "<<"\n";
+    cin >> e;
+    cout << "e的值为:" << e <<"\n";
     return 0;
 
 }
