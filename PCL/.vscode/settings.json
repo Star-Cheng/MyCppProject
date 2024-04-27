@@ -42,7 +42,24 @@
         "typeinfo": "cpp",
         "iomanip": "cpp",
         "cstring": "cpp",
-        "chrono": "cpp"
+        "chrono": "cpp",
+        "csignal": "cpp",
+        "ctime": "cpp",
+        "strstream": "cpp",
+        "bitset": "cpp",
+        "complex": "cpp",
+        "list": "cpp",
+        "functional": "cpp",
+        "iterator": "cpp",
+        "map": "cpp",
+        "numeric": "cpp",
+        "random": "cpp",
+        "ratio": "cpp",
+        "set": "cpp",
+        "thread": "cpp",
+        "cfenv": "cpp",
+        "cinttypes": "cpp",
+        "typeindex": "cpp"
     },
-    "cmake.sourceDirectory": "C:/Users/13359/Documents/CppProject/PCL"
+    "cmake.generator": "MinGW Makefiles"
 }
