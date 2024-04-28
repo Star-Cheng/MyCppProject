@@ -13,23 +13,28 @@ int main()
     // cin >> score;
     if (score > 500)
     {
-        cout << "一本大学" << "\n";
+        cout << "一本大学"
+             << "\n";
         if (score > 600 && score < 650)
         {
-            cout << "211大学" << "\n";
+            cout << "211大学"
+                 << "\n";
         }
         else if (score > 650)
         {
-            cout << "985大学" << "\n";
+            cout << "985大学"
+                 << "\n";
         }
     }
     else if (score < 500 && score > 300)
     {
-        cout << "二本大学" << "\n";
+        cout << "二本大学"
+             << "\n";
     }
     else
     {
-        cout << "大专院校" << "\n";
+        cout << "大专院校"
+             << "\n";
     }
     // 判断三只小猪的体重
     int a, b, c, t;
@@ -93,25 +98,30 @@ int main()
     case 1:
     case 2:
     case 3:
-        cout << "春季" << "\n";
+        cout << "春季"
+             << "\n";
         break;
     case 4:
     case 5:
     case 6:
-        cout << "夏季" << "\n";
+        cout << "夏季"
+             << "\n";
         break;
     case 7:
     case 8:
     case 9:
-        cout << "秋季" << "\n";
+        cout << "秋季"
+             << "\n";
         break;
     case 10:
     case 11:
     case 12:
-        cout << "冬季" << "\n";
+        cout << "冬季"
+             << "\n";
         break;
     default:
-        cout << "输入错误" << "\n";
+        cout << "输入错误"
+             << "\n";
         break;
     }
     // if和switch区别
@@ -129,22 +139,27 @@ int main()
     while (flag)
     {
         int val;
+        cout << "猜一个数字: "
+             << "";
         cin >> val;
         if (val == num)
         {
-            cout << "恭喜你猜对了" << "\n";
+            cout << "恭喜你猜对了"
+                 << "\n";
             flag = false;
         }
         else if (val > num)
         {
-            cout << "猜大了" << "\n";
+            cout << "猜大了"
+                 << "\n";
         }
         else
         {
-            cout << "猜小了" << "\n";
+            cout << "猜小了"
+                 << "\n";
         }
     }
-    
+
     // 4.2.2 do...while循环
     int i = 0;
     do
@@ -153,5 +168,25 @@ int main()
         i++;
     } while (i < 10);
     // while 和 do...while区别, do...while循环至少执行一次
+    // 4.2.3 for循环
+    for (int i = 0; i < 10; i++)
+    {
+        if (i == 5)
+        {
+            cout << "i = " << i << "\n";
+            break;
+        }
+        continue;
+        cout << "i = " << i << "\n";
+    }
+    
+    // 4.3 跳转语句
+    cout << "1. xxxxx" << endl;
+    cout << "2. xxxxx" << endl;
+    goto label;
+    cout << "3. xxxxx" << endl;
+    label:
+    cout << "4. xxxxx" << endl;
+    cout << "5. xxxxx" << endl;
     return 0;
 }
