@@ -42,7 +42,8 @@
         "typeinfo": "cpp",
         "iomanip": "cpp",
         "cstring": "cpp",
-        "chrono": "cpp"
+        "chrono": "cpp",
+        "typeindex": "cpp"
     },
-    "cmake.sourceDirectory": "C:/Users/13359/Documents/CppProject/PCL"
+    // "cmake.sourceDirectory": "C:/Users/13359/Documents/CppProject/Pcl/00base"
 }
