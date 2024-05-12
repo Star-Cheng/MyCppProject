@@ -56,6 +56,37 @@ void printInfo(teachers tArray[], int t_len)
         }
     }
 }
+struct hero
+{
+    string name;
+    int age;
+    string sex;
+};
+
+void sort_age(hero hero_arr[], int hero_len)
+{
+    for (int i = 0; i < hero_len - 1; i++)
+    {
+        for (int j = 0; j < hero_len - i - 1; j++)
+        {
+            if (hero_arr[j].age > hero_arr[j + 1].age)
+            {
+                hero temp = hero_arr[j];
+                hero_arr[j] = hero_arr[j + 1];
+                hero_arr[j + 1] = temp;
+            }
+        }
+    }
+}
+void printHero(hero hero_arr[], int hero_len)
+{
+    for (int i = 0; i < hero_len; i++)
+    {
+        cout << hero_arr[i].name << " "
+             << hero_arr[i].age << " "
+             << hero_arr[i].sex << endl;
+    }
+}
 
 int main()
 {
@@ -119,5 +150,15 @@ int main()
         }
     }
     printInfo(tArray, 3);
+    hero heroArray[5] =
+        {
+            {"hero_1", 21, "man"},
+            {"hero_2", 20, "man"},
+            {"hero_3", 23, "man"},
+            {"hero_4", 21, "man"},
+            {"hero_5", 18, "woman"},
+        };
+    sort_age(heroArray, 5);
+    printHero(heroArray, 5);
     return 0;
 }
