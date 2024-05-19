@@ -417,3 +417,319 @@ int main()
     cout << "age: " << p.getAge() << endl;
 }
 ```
+
+### 4.2 对象的初始化和清理
+
+#### 4.2.1 构造函数和析构函数
+
+1. 构造函数: 对象创建时调用
+    1. 构造函数, 没有返回值也不写void
+    2. 函数名称与类名相同
+    3. 构造函数可以有参数, 因此可以发生重载
+    4. 程序在调用对象时候会自动调用构造, 无需手动调用, 而且只会调用一次
+2. 析构函数: 对象销毁时调用
+    1. 析构函数, 没有返回值也不写void
+    2. 函数名称与类名相同, 前面加~
+    3. 析构函数没有参数, 因此不能发生重载
+    4. 程序在销毁对象时候会自动调用析构, 无需手动调用, 而且只会调用一次
+
+```C++
+#include <iostream>
+using namespace std;
+// 对象的初始化和清理
+// 1. 构造函数 进行初始化操作
+class Person
+{
+public:
+    // 1. 构造函数
+    // 构造函数, 没有返回值也不写void
+    // 函数名称与类名相同
+    // 构造函数可以有参数, 因此可以发生重载
+    // 程序在调用对象时候会自动调用构造, 无需手动调用, 而且只会调用一次
+    Person()
+    {
+        cout << "Person的构造函数" << endl;
+    }
+    // 2. 析构函数
+    // 析构函数, 没有返回值也不写void
+    // 函数名称与类名相同, 前面加~
+    // 析构函数没有参数, 因此不能发生重载
+    // 程序在销毁对象时候会自动调用析构, 无需手动调用, 而且只会调用一次
+    ~Person()
+    {
+        cout << "Person的析构函数" << endl;
+    }
+};
+
+int main()
+{
+    Person p;
+    return 0;
+}
+```
+
+#### 4.2.2 构造函数的分类及作用
+
+1. 分类方式
+    1. 无参构造函数
+    2. 有参构造函数
+2. 三种调用方式
+    1. 括号法
+    2. 显示法
+    3. 隐式转换法
+
+```C++
+#include <iostream>
+using namespace std;
+// 1. 构造函数的分类及调用
+// 分类: 无参构造(默认构造)和有参构造
+
+class Person
+{
+public:
+    Person() // 1. 构造函数
+    {
+        cout << "Person的无参构造函数" << endl;
+    }
+    Person(int a) // 2. 有参构造函数
+    {
+        age = a;
+        cout << "Person的有参构造函数" << endl;
+    }
+    Person(const Person &p) // 3. 拷贝构造函数
+    {
+        age = p.age;
+        cout << "Person的拷贝构造函数" << endl;
+    }
+    ~Person() // 4. 析构函数
+    {
+        cout << "Person的析构函数" << endl;
+    }
+    int age;
+};
+// 调用
+void test01()
+{
+    // 1. 括号法
+    Person p1;     // 默认构造函数调用
+    Person p2(10); // 有参构造函数调用
+    Person p3(p2); // 拷贝构造函数调用
+    // 注意事项: 调用默认构造函数时, 不要加()
+
+    // 2. 显示法
+    Person p4 = Person();   // 无参构造
+    Person p5 = Person(10); // 有参构造
+    Person p6 = p5;         // 拷贝构造
+    // 注意事项1
+    Person(10); // 匿名对象, 特点: 当前行执行结束后系统会立即回收掉匿名对象
+    // 注意事项2: 不要利用拷贝构造函数来初始化匿名对象
+    Person(p7); // error, 编译器会认为Person(p7) == Person p7;
+
+    // 3. 隐式转换法
+    Person p8 = 10; // 相当于Person p8 = Person(10);
+    Person p9 = p8; // 相当于Person p9 = Person(p8);
+}
+
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 4.2.3 拷贝构造函数调用时机
+
+1. 拷贝构造函数调用时机的三种情况
+    1. 使用一个已经创建完毕的对象来初始化一个新对象
+    2. 值传递的方式给函数参数传值
+    3. 以值方式返回局部对象
+
+```C++
+#include <iostream>
+using namespace std;
+// 拷贝构造函数的调用时机
+
+class Person
+{
+public:
+    Person() // 1. 构造函数
+    {
+        cout << "Person的无参构造函数" << endl;
+    }
+    Person(int a) // 2. 有参构造函数
+    {
+        age = a;
+        cout << "Person的有参构造函数" << endl;
+    }
+    Person(const Person &p) // 3. 拷贝构造函数
+    {
+        age = p.age;
+        cout << "Person的拷贝构造函数" << endl;
+    }
+    ~Person() // 4. 析构函数
+    {
+        cout << "Person的析构函数" << endl;
+    }
+    int age;
+};
+// 1. 使用一个已经创建完毕的对象来初始化一个新对象
+void test01()
+{
+    Person p1(20);
+    Person p2(p1);
+    cout << "p2 age: " << p2.age << endl;
+}
+// 2. 值传递的方式给函数参数传值
+void doWork(Person p)
+{
+    p.age = 1000;
+}
+void test02()
+{
+    Person p;
+    doWork(p);
+}
+// 3. 以值方式返回局部对象
+Person dowWork2()
+{
+    Person p;
+    cout << &p << endl;
+    return Person(p);
+}
+void test03()
+{
+    Person p = dowWork2();
+    cout << &p << endl;
+}
+int main()
+{
+    test01();
+    test02();
+    test03();
+
+    return 0;
+}
+```
+
+#### 4.2.4 构造函数调用规则
+
++ 默认情况下, C++编译器至少给一个类添加3个函数
+    1. 默认构造函数(无参, 函数体为空)
+    2. 默认析构函数(无参, 函数体为空)
+    3. 默认拷贝构造函数, 对属性进行值拷贝
+
++ 拷贝规则
+    1. 如果用户定义了有参构造函数, C++不会再提供无参构造函数, 但会提供拷贝构造函数
+    2. 如果用户定义了拷贝构造函数, C++不会再提供默认拷贝构造函数
+
+```C++
+#include <iostream>
+using namespace std;
+// 构造函数的调用规则
+// 1. 创建一个类, C++编译器会给每一个类都添加至少3个函数
+// 默认构造函数(无参, 函数体为空)
+// 默认析构函数(无参, 函数体为空)
+// 默认拷贝构造函数, 对属性进行值拷贝
+
+// 2. 如果用户定义了有参构造函数, C++不会再提供无参构造函数, 但会提供拷贝构造函数
+// 3. 如果用户定义了拷贝构造函数, C++不会再提供默认拷贝构造函数
+class Person
+{
+public:
+    Person()
+    {
+        cout << "默认构造函数" << endl;
+    }
+    Person(int a)
+    {
+        cout << "有参构造函数" << endl;
+        age = a;
+    }
+    // Person(const Person &p)
+    // {
+    //     age = p.age;
+    //     cout << "拷贝构造函数" << endl;
+    // }
+    ~Person()
+    {
+        cout << "析构函数" << endl;
+    }
+    int age;
+};
+void test01()
+{
+    Person p1;
+    p1.age = 10;
+    Person p2(p1);
+    cout << "p2.age = " << p2.age << endl;
+}
+
+void test02()
+{
+    Person p(18);
+    Person p2(p);
+    cout << "p.age = " << p.age << endl;
+    cout << "p2.age = " << p2.age << endl;
+}
+int main()
+{
+    test02();
+    return 0;
+}
+```
+
+#### 4.2.5 深拷贝与浅拷贝
+
+1. 浅拷贝: 简单的复制拷贝
+2. 深拷贝: 在读取重新申请空间, 进行拷贝操作
+
+```C++
+#include <iostream>
+using namespace std;
+// 深拷贝与浅拷贝
+class Person
+{
+public:
+    Person()
+    {
+        cout << "Person默认构造函数" << endl;
+    }
+    Person(int age, int height)
+    {
+        m_Age = age;
+        m_Height = new int(height);
+        cout << "Person有参构造函数" << endl;
+    }
+    Person(const Person &p)
+    {
+        m_Age = p.m_Age;
+        m_Height = p.m_Height;           // 浅拷贝, 编译器默认的操作
+        m_Height = new int(*p.m_Height); // 在堆区开辟数据做拷贝操作
+        cout << "Person拷贝构造函数" << endl;
+    }
+    ~Person()
+    {
+        // 析构代码, 将堆区开辟数据做释放操作
+        if (m_Height != NULL)
+        {
+            delete m_Height;
+            m_Height = NULL;
+        }
+        cout << "Person析构函数" << endl;
+    }
+    int m_Age;
+    int *m_Height;
+};
+void test01()
+{
+    Person p1(18, 185);
+    cout << "p1.m_Age = " << p1.m_Age << " p1.m_Height = " << *p1.m_Height << endl;
+    Person p2(p1);
+    cout << "p2.m_Age = " << p2.m_Age << " p2.m_Height = " << *p2.m_Height << endl;
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```

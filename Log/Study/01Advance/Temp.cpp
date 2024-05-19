@@ -1,86 +1,49 @@
 #include <iostream>
 using namespace std;
 #include <string>
-
-class Cube
+// 深拷贝与浅拷贝
+class Person
 {
-private:
-    int m_length;
-    int m_width;
-    int m_height;
-
 public:
-    void set_length(int length)
+    Person()
     {
-        m_length = length;
+        cout << "Person默认构造函数" << endl;
     }
-    int get_length()
+    Person(int age, int height)
     {
-        return m_length;
+        m_Age = age;
+        m_Height = new int(height);
+        cout << "Person有参构造函数" << endl;
     }
-    void set_width(int width)
+    Person(const Person &p)
     {
-        m_width = width;
+        m_Age = p.m_Age;
+        m_Height = p.m_Height;           // 浅拷贝, 编译器默认的操作
+        m_Height = new int(*p.m_Height); // 在堆区开辟数据做拷贝操作
+        cout << "Person拷贝构造函数" << endl;
     }
-    int get_width()
+    ~Person()
     {
-        return m_width;
-    }
-    void set_height(int height)
-    {
-        m_height = height;
-    }
-    int get_height()
-    {
-        return m_height;
-    }
-    int get_calculateS()
-    {
-        return 2 * (m_length * m_width + m_width * m_height + m_height * m_length);
-    }
-    int get_caluculateV()
-    {
-        return m_length * m_width * m_height;
-    }
-    bool isSameByClass(Cube &c)
-    {
-        if (c.get_length() == m_length && c.get_width() == m_width && c.get_height() == m_height)
+        // 析构代码, 将堆区开辟数据做释放操作
+        if (m_Height != NULL)
         {
-            return true;
+            delete m_Height;
+            m_Height = NULL;
         }
-        else
-        {
-            return false;
-        }
+        cout << "Person析构函数" << endl;
     }
+    int m_Age;
+    int *m_Height;
 };
-bool isSame(Cube c1, Cube c2)
+void test01()
 {
-    if (c1.get_length() == c2.get_length() && c1.get_width() == c2.get_width() && c1.get_height() == c2.get_height())
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
+    Person p1(18, 185);
+    cout << "p1.m_Age = " << p1.m_Age << " p1.m_Height = " << *p1.m_Height << endl;
+    Person p2(p1);
+    cout << "p2.m_Age = " << p2.m_Age << " p2.m_Height = " << *p2.m_Height << endl;
 }
 int main()
 {
-    Cube c1;
-    c1.set_length(10);
-    c1.set_width(10);
-    c1.set_height(10);
-    cout << "length: " << c1.get_length() << endl;
-    cout << "width: " << c1.get_width() << endl;
-    cout << "height: " << c1.get_height() << endl;
-    cout << "surface area: " << c1.get_calculateS() << endl;
-    cout << "volume: " << c1.get_caluculateV() << endl;
-    Cube c2;
-    c2.set_length(10);
-    c2.set_width(10);
-    c2.set_height(10);
-    cout << "is_same: " << isSame(c1, c2) << endl;
-    cout << "is_same: " << c1.isSameByClass(c2) << endl;
+    test01();
     return 0;
 }
