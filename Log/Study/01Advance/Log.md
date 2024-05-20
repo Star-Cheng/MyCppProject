@@ -930,5 +930,184 @@ int main()
 + 只有非静态成员变量才属于类的对象上
 
 ```C++
+#include <iostream>
+using namespace std;
 
+// 成员变量和成员函数是分开存储的
+class Person
+{
+public:
+    int m_A;                // 非静态成员变量, 属于类的对象
+    static int m_B;         // 静态成员变量, 不属于类的对象
+    void func() {};         // 非静态成员函数, 属于类的对象
+    static void func2() {}; // 静态成员函数, 不属于类的对象
+};
+int Person::m_B = 100;
+void test01()
+{
+    Person p;
+    // C++编译器会给每个空对象也分配一个字节空间, 是为了区分空对象占内存的位置
+    // 每个空对象也应该有一个独一无二的内存地址
+    cout << "sizeof(p) = " << sizeof(p) << endl; // 空对象占用内存为1, 非空对象占用内存为4
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 4.3.2 this指针概念
+
+1. this指针指向被调用的函数所属的对象
+    1. this指针是隐含每一个非静态成员函数内的一种指针
+    2. this指针不需要定义, 直接使用即可
+2. this指针的用途
+    1. 当形参和成员变量同名时, 可用this指针来区分
+    2. 在类的非静态成员函数中返回对象本身, 可以使用return *this;
+
+```C++
+#include <iostream>
+using namespace std;
+
+class Person
+{
+public:
+    Person(int age)
+    {
+        // this指针指向的是被调用的成员函数(p1)所属的对象
+        this->age = age;
+    }
+    // Person &PersonAddAge(Person &p)  // 返回值, 创建新的对象
+    Person &PersonAddAge(Person &p) // 返回引用, 引用对象
+    {
+        this->age += p.age;
+        // this指p2的指针, 而*this指向的是p2这个对象本体
+        return *this;
+    }
+    int age;
+};
+// 1. 解决名称冲突
+void test01()
+{
+    Person p(18);
+    cout << "p1.age: " << p.age << endl;
+}
+// 2. 返回对象本身用*this
+void test02()
+{
+    Person p1(18);
+    Person p2(20);
+    p2.PersonAddAge(p1).PersonAddAge(p1); // 链式编程思想
+    cout << "p2.age: " << p2.age << endl;
+}
+int main()
+{
+    test01();
+    test02();
+    return 0;
+}
+```
+
+#### 4.3.3 空指针访问成员函数
+
++ C++中空指针也可以调用成员函数, 但是也要注意有没有用到this指针
+
+```C++
+#include <iostream>
+using namespace std;
+
+// 空指针调用成员函数
+class Person
+{
+public:
+    void showClassName()
+    {
+        cout << "this is Person class" << endl;
+    }
+    void showPersonAge()
+    {
+        // 报错原因: 因为传入的指针是NULL
+        if (this == NULL)
+        {
+            return;
+        }
+        cout << "age = " << m_Age << endl;
+    }
+    void showStatic()
+    {
+        // 空指针可以调用静态成员函数
+        cout << "m_A = " << m_A << endl;
+    }
+    int m_Age;
+    static int m_A;
+};
+int Person::m_A = 100;
+void test01()
+{
+    Person *p = NULL;
+    p->showClassName();
+    p->showPersonAge();
+    p->showStatic();
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 4.3.4 const修饰成员函数
+
+1. 常函数
+    1. 成员函数后加const后我们称这个函数为常函数
+    2. 常函数内不可以修改成员属性
+    3. 成员属性声明时加关键字mutable后, 在常函数中依然可以修改
+2. 常对象
+    1. 声明对象前加const成该对象为常对象
+    2. 常对象只能调用常函数
+
+```C++
+#include <iostream>
+using namespace std;
+
+// 常函数
+class Person
+{
+public:
+    // this指针的本质是指针常量: 指针的指向是不可修改的
+    // const Person *const this;
+    // 在成员函数后加const, 修饰的是this指向, 让指针指向的值也不能修改
+    Person() {}
+    void showPerson() const
+    {
+        // this->m_Age = 100; // error
+        // this = NULL;       // error
+        this->m_Salary = 8000;
+        cout << "m_Salary = " << m_Salary << endl;
+    }
+    void func() {}
+    int m_Age;
+    mutable int m_Salary;
+};
+void test01()
+{
+    Person p;
+    p.showPerson();
+}
+// 常对象
+void test02()
+{
+    const Person p;
+    // p.m_Age = 100;
+    // p.m_Salary = 8000;
+    p.showPerson(); // 常对象可以调用常成员函数
+    // p.func();       // 常对象不可以调用普通成员函数
+}
+int main()
+{
+    test01();
+    test02();
+    return 0;
+}
 ```

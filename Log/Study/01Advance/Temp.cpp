@@ -2,41 +2,42 @@
 using namespace std;
 #include <string>
 
-// 静态成员函数
-// 1. 所有对象共享一个函数
-// 2. 静态成员函数只能访问静态成员变量
+// 常函数
 class Person
 {
 public:
-    static void func() // 静态成员函数
+    // this指针的本质是指针常量: 指针的指向是不可修改的
+    // const Person *const this;
+    // 在成员函数后加const, 修饰的是this指向, 让指针指向的值也不能修改
+    Person() {}
+    void showPerson() const
     {
-        m_A = 100; // 静态成员函数可以访问静态成员变量
-        // m_B = 200; // 静态成员函数不能访问非静态成员变量
-        cout << "static void func调用" << endl;
+        // this->m_Age = 100; // error
+        // this = NULL;       // error
+        this->m_Salary = 8000;
+        cout << "m_Salary = " << m_Salary << endl;
     }
-    static int m_A;
-    int m_B;
-    // 静态成员函数也是有访问权限的
-private:
-    static void func2()
-    {
-        cout << "static void func2调用" << endl;
-    }
+    void func() {}
+    int m_Age;
+    mutable int m_Salary;
 };
-int Person::m_A = 10;
 void test01()
 {
-    // 1. 通过对象访问
-    Person p1;
-    p1.func();
-    cout << p1.m_A << endl;
-    // 2. 通过类名访问
-    Person::func();
-    // Person::func2(); // 静态成员函数不能通过对象访问
+    Person p;
+    p.showPerson();
 }
-
+// 常对象
+void test02()
+{
+    const Person p;
+    // p.m_Age = 100;
+    // p.m_Salary = 8000;
+    p.showPerson(); // 常对象可以调用常成员函数
+    // p.func();       // 常对象不可以调用普通成员函数
+}
 int main()
 {
     test01();
+    test02();
     return 0;
 }
