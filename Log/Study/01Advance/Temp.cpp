@@ -1,47 +1,40 @@
 #include <iostream>
 using namespace std;
 #include <string>
-// 深拷贝与浅拷贝
+
+// 静态成员函数
+// 1. 所有对象共享一个函数
+// 2. 静态成员函数只能访问静态成员变量
 class Person
 {
 public:
-    Person()
+    static void func() // 静态成员函数
     {
-        cout << "Person默认构造函数" << endl;
+        m_A = 100; // 静态成员函数可以访问静态成员变量
+        // m_B = 200; // 静态成员函数不能访问非静态成员变量
+        cout << "static void func调用" << endl;
     }
-    Person(int age, int height)
+    static int m_A;
+    int m_B;
+    // 静态成员函数也是有访问权限的
+private:
+    static void func2()
     {
-        m_Age = age;
-        m_Height = new int(height);
-        cout << "Person有参构造函数" << endl;
+        cout << "static void func2调用" << endl;
     }
-    Person(const Person &p)
-    {
-        m_Age = p.m_Age;
-        m_Height = p.m_Height;           // 浅拷贝, 编译器默认的操作
-        m_Height = new int(*p.m_Height); // 在堆区开辟数据做拷贝操作
-        cout << "Person拷贝构造函数" << endl;
-    }
-    ~Person()
-    {
-        // 析构代码, 将堆区开辟数据做释放操作
-        if (m_Height != NULL)
-        {
-            delete m_Height;
-            m_Height = NULL;
-        }
-        cout << "Person析构函数" << endl;
-    }
-    int m_Age;
-    int *m_Height;
 };
+int Person::m_A = 10;
 void test01()
 {
-    Person p1(18, 185);
-    cout << "p1.m_Age = " << p1.m_Age << " p1.m_Height = " << *p1.m_Height << endl;
-    Person p2(p1);
-    cout << "p2.m_Age = " << p2.m_Age << " p2.m_Height = " << *p2.m_Height << endl;
+    // 1. 通过对象访问
+    Person p1;
+    p1.func();
+    cout << p1.m_A << endl;
+    // 2. 通过类名访问
+    Person::func();
+    // Person::func2(); // 静态成员函数不能通过对象访问
 }
+
 int main()
 {
     test01();
