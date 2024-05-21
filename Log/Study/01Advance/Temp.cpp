@@ -2,42 +2,55 @@
 using namespace std;
 #include <string>
 
-// 常函数
-class Person
+// 重载递增运算符
+// 自定义整型
+class MyInteger
 {
 public:
-    // this指针的本质是指针常量: 指针的指向是不可修改的
-    // const Person *const this;
-    // 在成员函数后加const, 修饰的是this指向, 让指针指向的值也不能修改
-    Person() {}
-    void showPerson() const
+    friend ostream &operator<<(ostream &cout, const MyInteger &myinst);
+    MyInteger()
     {
-        // this->m_Age = 100; // error
-        // this = NULL;       // error
-        this->m_Salary = 8000;
-        cout << "m_Salary = " << m_Salary << endl;
+        m_Num = 0;
     }
-    void func() {}
-    int m_Age;
-    mutable int m_Salary;
+    // 重载前置++运算符
+    MyInteger &operator++()
+    {
+        m_Num++;
+        return *this;
+    }
+    // 重载后置++运算符
+    MyInteger operator++(int) // int代表占位参数, 可以用于区分前置和后置++运算符
+    {
+        MyInteger temp = *this;
+        m_Num++;
+        return temp;
+    }
+
+private:
+    int m_Num;
 };
+// // 重载左移运算符
+ostream &operator<<(ostream &cout, const MyInteger &my_data)
+{
+    cout << my_data.m_Num;
+    return cout;
+}
 void test01()
 {
-    Person p;
-    p.showPerson();
+    MyInteger myinst;
+    cout << ++myinst << endl;
+    cout << myinst << endl;
 }
-// 常对象
+
 void test02()
 {
-    const Person p;
-    // p.m_Age = 100;
-    // p.m_Salary = 8000;
-    p.showPerson(); // 常对象可以调用常成员函数
-    // p.func();       // 常对象不可以调用普通成员函数
+    MyInteger myinst;
+    cout << myinst++ << endl;
+    cout << myinst << endl;
 }
-int main()
+main()
 {
-    test01();
+    // test01();
     test02();
     return 0;
 }

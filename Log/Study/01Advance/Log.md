@@ -1111,3 +1111,281 @@ int main()
     return 0;
 }
 ```
+
+### 4.4 友元
+
++ 友元的目的就是让一个函数或者类访问另一个类的私有成员
++ 友元关键词为: friend
++ 有缘的三种实现
+    1. 全局函数做友元
+    2. 类做友元
+    3. 成员函数做友元
+
+```C++
+#include <iostream>
+using namespace std;
+#include <string>
+
+// 全局函数做友元
+class Building
+{
+    // 告诉编译器goodGay函数是Building类的好朋友, 可以访问类中的私有内容
+    friend void goodGay(Building *building);
+
+public:
+    Building()
+    {
+        m_SittingRoom = "客厅";
+        m_BedRoom = "卧室";
+    }
+    string m_SittingRoom;
+
+private:
+    string m_BedRoom;
+};
+void goodGay(Building *building)
+{
+    cout << "好基友正在访问：" << building->m_SittingRoom << endl;
+    cout << "好基友正在访问：" << building->m_BedRoom << endl;
+}
+void test01()
+{
+    Building b;
+    goodGay(&b);
+}
+main()
+{
+    test01();
+    return 0;
+}
+```
+
+```C++
+#include <iostream>
+using namespace std;
+#include <string>
+
+class Building
+{
+public:
+    friend class GoodGay;
+    Building();
+    string m_SittingRoom;
+
+private:
+    string m_BedRoom;
+};
+
+// 类做友元
+class GoodGay
+{
+public:
+    GoodGay();
+    void visit();
+    Building *building;
+};
+// 类外写成员函数
+Building::Building()
+{
+    m_SittingRoom = "客厅";
+    m_BedRoom = "卧室";
+}
+GoodGay::GoodGay()
+{
+    building = new Building;
+}
+void GoodGay::visit()
+{
+    cout << "好基友正在访问：" << building->m_SittingRoom << endl;
+    cout << "好基友正在访问：" << building->m_BedRoom << endl;
+}
+void test01()
+{
+    GoodGay g;
+    g.visit();
+}
+main()
+{
+    test01();
+    return 0;
+}
+```
+
+```C++
+#include <iostream>
+using namespace std;
+#include <string>
+
+class Building;
+// 成员函数做友元
+class GoodGay
+{
+public:
+    GoodGay();
+    void visit();  // 让visit函数可以访问Building中的私有成员
+    void visit2(); // visit2函数不可以访问Building中的私有成员
+    Building *building;
+};
+class Building
+{
+public:
+    // 告诉编译器GoodGay类中的visit函数是Building类的好朋友, 可以访问私有成员
+    friend void GoodGay::visit();
+    Building();
+    string m_SittingRoom; // 客厅
+private:
+    string m_BedRoom; // 卧室
+};
+Building::Building()
+{
+    m_SittingRoom = "客厅";
+    m_BedRoom = "卧室";
+}
+GoodGay::GoodGay()
+{
+    building = new Building;
+}
+void GoodGay::visit()
+{
+    cout << "好基友正在访问：" << building->m_SittingRoom << endl;
+    cout << "好基友正在访问：" << building->m_BedRoom << endl;
+}
+void GoodGay::visit2()
+{
+    cout << "好基友正在访问：" << building->m_SittingRoom << endl;
+    // cout << "好基友正在访问：" << building->m_BedRoom << endl; // error
+}
+void test01()
+{
+    GoodGay g;
+    g.visit();
+    g.visit2();
+}
+main()
+{
+    test01();
+    return 0;
+}
+```
+
+### 4.5 运算符重载
+
++ 作用: 实现两个自定义类型相加的运算
+
+#### 4.5.1 加号运算符重载
+
+```C++
+#include <iostream>
+using namespace std;
+
+// 加号运算符重载
+class Person
+{
+public:
+    // 1. 成员函数重载+号
+    // Person operator+(Person &p)
+    // {
+    //     Person temp;
+    //     temp.m_A = this->m_A + p.m_A;
+    //     temp.m_B = this->m_B + p.m_B;
+    //     return temp;
+    // }
+    int m_A;
+    int m_B;
+};
+// 2. 全局函数重载+号
+Person operator+(Person &p1, Person &p2)
+{
+    Person temp;
+    temp.m_A = p1.m_A + p2.m_A;
+    temp.m_B = p1.m_B + p2.m_B;
+    return temp;
+}
+// 运算符也可以发生重载
+Person operator+(Person &p1, int a)
+{
+    Person temp;
+    temp.m_A = p1.m_A + a;
+    temp.m_B = p1.m_B + a;
+    return temp;
+}
+void test01()
+{
+    Person p1;
+    p1.m_A = 10;
+    p1.m_B = 10;
+    Person p2;
+    p2.m_A = 10;
+    p2.m_B = 10;
+    // Person p3 = p1.operator+(p2);  // 成员函数的本质调用
+    Person p4 = operator+(p1, p2); // 全局函数的本质调用
+    Person p5 = p1 + p2;           // 简化形式
+    Person p6 = p1 + 20;           // 运算符也可以发生重载
+    cout << "m_A = " << p5.m_A << endl;
+    cout << "m_B = " << p5.m_B << endl;
+    cout << "m_A = " << p6.m_A << endl;
+    cout << "m_B = " << p6.m_B << endl;
+};
+main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 4.5.2 左移运算符重载
+
++ 作用: 可以输出自定义数据类型
+
+```C++
+#include <iostream>
+using namespace std;
+#include <string>
+
+// 左移运算符重载
+class Person
+{
+public:
+    friend ostream &operator<<(ostream &cout, Person &p);
+    Person(int a, int b)
+    {
+        this->m_A = a;
+        this->m_B = b;
+    }
+    // 利用成员函数重载左移运算符, 通常不会利用成员函数重载左移运算符
+    void operator<<(ostream &out)
+    {
+        out << "m_A = " << this->m_A << " m_B = " << this->m_B << endl;
+    }
+
+private:
+    int m_A;
+    int m_B;
+};
+// 全局函数重载左移运算符
+ostream &operator<<(ostream &cout, Person &p)
+{
+    cout << "m_A = " << p.m_A << " m_B = " << p.m_B;
+    return cout;
+}
+void test01()
+{
+    Person p(10, 20);
+    p.operator<<(cout);                  // 成员函数重载左移运算符本质调用
+    p << cout;                           // 成员函数重载左移运算符简化调用
+    cout << p << " hello world" << endl; // 全局函数重载左移运算符调用
+}
+main()
+{
+    test01();
+    return 0;
+}
+```
+
+### 4.5.3 递增运算符重载
+
++ 作用: 通过重载递增运算符, 实现自己的整型数据
+
+```C++
+
+```
