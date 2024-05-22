@@ -1,56 +1,61 @@
 #include <iostream>
 using namespace std;
-#include <string>
 
-// 重载递增运算符
-// 自定义整型
-class MyInteger
+// 继承中的同名成员处理
+class Base
 {
 public:
-    friend ostream &operator<<(ostream &cout, const MyInteger &myinst);
-    MyInteger()
+    Base()
     {
-        m_Num = 0;
+        m_A = 100;
     }
-    // 重载前置++运算符
-    MyInteger &operator++()
+    void func()
     {
-        m_Num++;
-        return *this;
+        cout << "Base func() = " << m_A << endl;
     }
-    // 重载后置++运算符
-    MyInteger operator++(int) // int代表占位参数, 可以用于区分前置和后置++运算符
+    // 如果子类中出现和父类同名的成员函数, 子类的同名成员会隐藏掉父类中所有同名成员函数
+    void func(int a)
     {
-        MyInteger temp = *this;
-        m_Num++;
-        return temp;
+        cout << "Base func(int a) = " << a << endl;
     }
-
-private:
-    int m_Num;
+    int m_A;
 };
-// // 重载左移运算符
-ostream &operator<<(ostream &cout, const MyInteger &my_data)
+class Son : public Base
 {
-    cout << my_data.m_Num;
-    return cout;
-}
+public:
+    Son()
+    {
+        m_A = 200;
+    }
+    void func()
+    {
+        cout << "Son func() = " << m_A << endl;
+    }
+    int m_A;
+};
+// 同名成员属性处理
 void test01()
 {
-    MyInteger myinst;
-    cout << ++myinst << endl;
-    cout << myinst << endl;
+    Son s1;
+    // 直接调用, 调用的是子类中的同名成员
+    cout << "Son m_A = " << s1.m_A << endl;
+    // 如果通过子类对象访问到父类中同名成员, 需要加作用域
+    cout << "Base m_A = " << s1.Base::m_A << endl;
 }
-
+// 同名成员函数处理
 void test02()
 {
-    MyInteger myinst;
-    cout << myinst++ << endl;
-    cout << myinst << endl;
+    Son s2;
+    // 直接调用, 调用的是子类中的同名函数
+    s2.func();
+    // 如果通过子类对象访问到父类中同名函数, 需要加作用域
+    s2.Base::func();
+    // 如果想访问到父类中被隐藏的同名成员函数, 需要加作用域
+    s2.Base::func(100);
 }
 main()
 {
-    // test01();
+    test01();
     test02();
     return 0;
 }

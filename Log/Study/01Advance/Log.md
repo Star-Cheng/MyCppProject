@@ -5,7 +5,7 @@
 + 代码区: 存放代码, 特点: 共享, 可读
 + 全局区: 全局变量、静态变量、全局const常量和字符串常量存放于此, 该区域的数据在程序结束之后由操作系统释放
 + 栈区: 有编译器自动分配释放, 存放函数的参数值, 局部变量, 不要返回局部变量的地址
-+ 堆区: 有程序员分配释放, 若程序员不是放， 程序结束时由操作系统回收, 利用new开辟堆区空间, 利用delete释放堆区空间
++ 堆区: 有程序员分配释放, 若程序员不是放, 程序结束时由操作系统回收, 利用new开辟堆区空间, 利用delete释放堆区空间
 
 ## 2. 引用
 
@@ -823,7 +823,7 @@ int main()
 }
 ```
 
-### 4.2.8 静态成员
+#### 4.2.8 静态成员
 
 1. 静态成员变量
     1. 所有对象共享一份数据
@@ -1382,10 +1382,572 @@ main()
 }
 ```
 
-### 4.5.3 递增运算符重载
+#### 4.5.3 递增运算符重载
 
 + 作用: 通过重载递增运算符, 实现自己的整型数据
 
 ```C++
+#include <iostream>
+using namespace std;
 
+// 重载递增运算符
+// 自定义整型
+class MyInteger
+{
+public:
+    friend ostream &operator<<(ostream &cout, const MyInteger &myinst);
+    MyInteger()
+    {
+        m_Num = 0;
+    }
+    // 重载前置++运算符
+    MyInteger &operator++()
+    {
+        m_Num++;
+        return *this;
+    }
+    // 重载后置++运算符
+    MyInteger operator++(int) // int代表占位参数, 可以用于区分前置和后置++运算符
+    {
+        MyInteger temp = *this;
+        m_Num++;
+        return temp;
+    }
+
+private:
+    int m_Num;
+};
+// // 重载左移运算符
+ostream &operator<<(ostream &cout, const MyInteger &my_data)
+{
+    cout << my_data.m_Num;
+    return cout;
+}
+void test01()
+{
+    MyInteger myinst;
+    cout << ++myinst << endl;
+    cout << myinst << endl;
+}
+
+void test02()
+{
+    MyInteger myinst;
+    cout << myinst++ << endl;
+    cout << myinst << endl;
+}
+main()
+{
+    // test01();
+    test02();
+    return 0;
+}
 ```
+
+#### 4.5.4 赋值运算符重载
+
++ C++编译器至少给一个类添加4个函数
+    1. 默认构造函数(无参, 函数体为空)
+    2. 默认析构函数(无参, 函数体为空)
+    3. 拷贝构造函数, 对属性进行值拷贝
+    4. 赋值运算符operator=, 对属性进行值拷贝
+
+```C++
+#include <iostream>
+using namespace std;
+
+// 复制运算符重载
+class Person
+{
+public:
+    Person(int age)
+    {
+        m_Age = new int(age);
+    }
+    ~Person()
+    {
+        if (m_Age != NULL)
+        {
+            delete m_Age;
+            m_Age = NULL;
+        }
+    }
+    // 重载赋值运算符
+    Person &operator=(const Person &p)
+    {
+        // 应该先判断是否友属性在堆区, 如果有先释放, 然后再深拷贝
+        if (this->m_Age != NULL)
+        {
+            delete this->m_Age;
+            this->m_Age = NULL;
+        }
+        this->m_Age = new int(*p.m_Age); // 深拷贝
+        return *this;
+    }
+    // 拷贝构造函数
+    Person(const Person &p)
+    {
+        this->m_Age = new int(*p.m_Age); // 深拷贝
+    }
+    int *m_Age;
+};
+void test01()
+{
+    Person p1(18);
+    Person p2(20);
+    Person p3(30);
+    p2 = p1;         // 赋值运算符重载
+    p2 = Person(p1); // 拷贝构造函数
+    p3 = p2 = p1;    // 链式赋值操作
+    cout << "p1.m_Age = " << *p1.m_Age << endl;
+    cout << "p2.m_Age = " << *p2.m_Age << endl;
+    cout << "p3.m_Age = " << *p3.m_Age << endl;
+}
+main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 4.5.5 关系运算符重载
+
++ 作用: 重载关系运算符, 可以让两个自定义类型对象进行对比操作
+
+```C++
+#include <iostream>
+using namespace std;
+
+// 重载关系运算符
+class Person
+{
+public:
+    Person(string name, int age)
+    {
+        this->m_Name = name;
+        this->m_Age = age;
+    }
+
+    bool operator==(Person &p)
+    {
+        return this->m_Name > p.m_Name && this->m_Age > p.m_Age;
+    }
+    bool operator!=(Person &p)
+    {
+        return this->m_Name != p.m_Name || this->m_Age != p.m_Age;
+    }
+
+    string m_Name;
+    int m_Age;
+};
+void test01()
+{
+    Person p1("xiaoming", 19);
+    Person p2("xiaoming", 18);
+    if (p1 == p2)
+    {
+        cout << "p1 == p2" << endl;
+    }
+    else
+    {
+        cout << "p1 != p2" << endl;
+    }
+    if (p1 != p2)
+    {
+        cout << "p1 != p2" << endl;
+    }
+    else
+    {
+        cout << "p1 == p2" << endl;
+    }
+}
+main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 4.5.6 函数调用运算符重载
+
+1. 函数调用运算符()也可以重载
+2. 由于重载后使用的方式非常像函数的调用, 因此成为仿函数
+3. 仿函数没有固定写法, 非常灵活
+
+```C++
+#include <iostream>
+using namespace std;
+
+// 函数调用运算符重载
+// 打印输出类
+class MyPrint
+{
+public:
+    // 重载函数调用运算符
+    void operator()(string test)
+    {
+        cout << test << endl;
+    }
+};
+// 仿函数非常的灵活, 没有固定的写法
+class MyAdd
+{
+public:
+    int operator()(int a, int b)
+    {
+        return a + b;
+    }
+};
+void test01()
+{
+    MyPrint myPrint;
+    myPrint("hello world"); // 由于使用起来类似函数调用, 因此称为仿函数
+}
+void test02()
+{
+    MyAdd myAdd;
+    int ret = myAdd(10, 20);
+    cout << "ret = " << ret << endl;
+    // 匿名函数对象
+    cout << MyAdd()(10, 20) << endl;
+}
+main()
+{
+    test01();
+    test02();
+    return 0;
+}
+```
+
+### 4.6 继承
+
+#### 4.6.1 继承的基本语法
+
++ 继承的好处: 可以减少重复代码
++ 语法: class 子类 : 继承方式 父类
++ 子类也称为派生类, 父类也称为基类
++ 派生类中的成员, 包含两大部分
+    1. 一列是从基类继承过来的, 一类是自己添加的成员
+    2. 从基类继承过来的表现其共性, 而新增的成员体现了其个性
+
+```C++
+#include <iostream>
+using namespace std;
+
+// 普通页面实现
+// Python页面
+class Python
+{
+public:
+    void header()
+    {
+        cout << "页面、公开课、登录、注册..." << endl;
+    }
+    void footer()
+    {
+        cout << "帮助中心、交流合作、站内地图..." << endl;
+    }
+    void left()
+    {
+        cout << "Java、Python、C++..." << endl;
+    }
+    void content()
+    {
+        cout << "Python从入门到放弃..." << endl;
+    }
+};
+// 继承实现页面
+class BasePage
+{
+public:
+    void header()
+    {
+        cout << "页面、公开课、登录、注册..." << endl;
+    }
+    void footer()
+    {
+        cout << "帮助中心、交流合作、站内地图..." << endl;
+    }
+    void left()
+    {
+        cout << "Java、Python、C++..." << endl;
+    }
+};
+// Cpp页面
+// 继承的好处: 减少重复代码
+// 子类也称为派生类, 父类也称为基类
+class Cpp : public BasePage // 语法: class 子类 : 继承方式 父类
+{
+public:
+    void content()
+    {
+        cout << "C++从入门到放弃..." << endl;
+    }
+};
+
+void test01()
+{
+    cout << "普通页面实现" << endl;
+    Python p;
+    p.header();
+    p.footer();
+    p.left();
+    p.content();
+    cout << "-------------------------------" << endl;
+    cout << "继承实现页面" << endl;
+    Cpp c;
+    c.header();
+    c.footer();
+    c.left();
+    c.content();
+    cout << "-------------------------------" << endl;
+}
+main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 4.6.2 继承方式
+
++ 继承方式一共有三种
+    1. 公共继承
+    2. 保护继承
+    3. 私有继承
+
+```C++
+#include <iostream>
+using namespace std;
+
+// 继承方式
+// 1. 公共继承
+class Base1
+{
+public:
+    int m_A;
+
+protected:
+    int m_B;
+
+private:
+    int m_C;
+};
+class Son1 : public Base1
+{
+    void func()
+    {
+        m_A = 100; // 父类中公共成员到子类中变为公共成员
+        m_B = 200; // 父类中保护成员到子类中变为保护成员
+        // m_C = 300; // 父类中的私有成员不能被继承
+    }
+};
+// 2. 保护继承
+class Son2 : protected Base1
+{
+    void func()
+    {
+        m_A = 100; // 父类中公共成员到子类中变为保护成员
+        m_B = 200; // 父类中保护成员到子类中变为保护成员
+        // m_C = 300; // 父类中的私有成员不能被继承
+    }
+};
+class Son3 : private Base1
+{
+    void func()
+    {
+        m_A = 100; // 父类中公共成员到子类中变为私有成员
+        m_B = 200; // 父类中保护成员到子类中变为私有成员
+        // m_C = 300; // 父类中的私有成员不能被继承
+    }
+};
+void test01()
+{
+    Son1 s1;
+    s1.m_A = 100; // 到Son1中m_A是公共成员，可以被访问
+    // s1.m_B = 200; // 到Son1中m_B是保护成员，不能被访问
+    // s1.m_C = 300; // 到Son1中m_C是私有成员，不能被访问
+    cout << "s1.m_A = " << s1.m_A << endl;
+}
+void test02()
+{
+    Son2 s2;
+    // s2.m_A = 100; // 到Son2中m_A是保护成员，不能被访问
+    // s2.m_B = 200; // 到Son2中m_B是保护成员，不能被访问
+    // s2.m_C = 300; // 到Son2中m_C是私有成员，不能被访问
+}
+void test03()
+{
+    Son3 s3;
+    // s3.m_A = 100; // 到Son3中m_A是私有成员，不能被访问
+    // s3.m_B = 200; // 到Son3中m_B是私有成员，不能被访问
+    // s3.m_C = 300; // 到Son3中m_C是私有成员，不能被访问
+}
+main()
+{
+    test01();
+    test02();
+    test03();
+    return 0;
+}
+```
+
+#### 4.6.3 继承中的对象模型
+
+```C++
+#include <iostream>
+using namespace std;
+
+// 继承中的对象模型
+class Base
+{
+public:
+    int m_A;
+
+protected:
+    int m_B;
+
+private:
+    int m_C;
+};
+class Son : public Base
+{
+public:
+    int m_D;
+};
+// 利用开发人员命令提示工具查看对象模型: VS2017的开发人员命令提示符
+// 跳转盘符 C:
+// 跳转文件路径 cd C:\Users\13359\Documents\CppProject\Log\Study\01Advance
+// 查看命令: cl /d1 reportSingleClassLayout类名 文件名
+// cl /d1 reportSingleClassLayoutSon Temp.cpp
+
+void test01()
+{
+    // 父类中所有非静态成员属性都会被子类继承下来
+    // 父类中私有成员属性是被编译器给隐藏了, 因此是访问不到, 但是确实被继承下去了
+    cout << "sizeof(Base) = " << sizeof(Base) << endl; // 12
+    cout << "sizeof(Son) = " << sizeof(Son) << endl;   // 16
+}
+main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 4.6.4 继承中构造和析构顺序
+
++ 先构造父类, 再构造子类, 析构顺序和构造相反
+
+```C++
+#include <iostream>
+using namespace std;
+
+// 继承中的构造和析构顺序
+class Base
+{
+public:
+    Base()
+    {
+        cout << "Base()" << endl;
+    }
+    ~Base()
+    {
+        cout << "~Base()" << endl;
+    }
+};
+class Son : public Base
+{
+public:
+    Son()
+    {
+        cout << "Son()" << endl;
+    }
+    ~Son()
+    {
+        cout << "~Son()" << endl;
+    }
+};
+void test01()
+{
+    // 先构造父类, 再构造子类, 析构顺序和构造相反
+    Son s;
+}
+main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 4.6.5 继承同名成员处理方式
+
+1. 访问子类同名成员: 直接访问即可
+2. 访问父类同名成员: 需要加作用域
+3. 当子类与父类拥有同名的成员函数, 子类会隐藏父类中的同名成员函数, 加作用域可以访问到父类同名成员函数
+
+```C++
+#include <iostream>
+using namespace std;
+
+// 继承中的同名成员处理
+class Base
+{
+public:
+    Base()
+    {
+        m_A = 100;
+    }
+    void func()
+    {
+        cout << "Base func() = " << m_A << endl;
+    }
+    // 如果子类中出现和父类同名的成员函数, 子类的同名成员会隐藏掉父类中所有同名成员函数
+    void func(int a)
+    {
+        cout << "Base func(int a) = " << a << endl;
+    }
+    int m_A;
+};
+class Son : public Base
+{
+public:
+    Son()
+    {
+        m_A = 200;
+    }
+    void func()
+    {
+        cout << "Son func() = " << m_A << endl;
+    }
+    int m_A;
+};
+// 同名成员属性处理
+void test01()
+{
+    Son s1;
+    // 直接调用, 调用的是子类中的同名成员
+    cout << "Son m_A = " << s1.m_A << endl;
+    // 如果通过子类对象访问到父类中同名成员, 需要加作用域
+    cout << "Base m_A = " << s1.Base::m_A << endl;
+}
+// 同名成员函数处理
+void test02()
+{
+    Son s2;
+    // 直接调用, 调用的是子类中的同名函数
+    s2.func();
+    // 如果通过子类对象访问到父类中同名函数, 需要加作用域
+    s2.Base::func();
+    // 如果想访问到父类中被隐藏的同名成员函数, 需要加作用域
+    s2.Base::func(100);
+}
+main()
+{
+    test01();
+    test02();
+    return 0;
+}
+```
+
+#### 4.6.6 继承同名静态成员处理方式
