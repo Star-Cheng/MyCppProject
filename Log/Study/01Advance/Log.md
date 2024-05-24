@@ -1951,3 +1951,169 @@ main()
 ```
 
 #### 4.6.6 继承同名静态成员处理方式
+
+```C++
+#include <iostream>
+using namespace std;
+
+// 继承中的同名静态成员处理
+class Base
+{
+public:
+    static int m_A;
+    static void func() { cout << "Base::func()" << endl; }
+    static void func(int a) { cout << "Base::func(int a)" << endl; }
+};
+int Base::m_A = 100;
+class Son : public Base
+{
+public:
+    static int m_A;
+    static void func() { cout << "Son::func()" << endl; }
+};
+int Son::m_A = 200;
+// 同名静态成员属性
+void test01()
+{
+    // 1. 通过对象访问
+    Son s;
+    cout << "通过对象访问" << endl;
+    cout << "s.m_A = " << s.m_A << endl;
+    cout << "Base::m_A = " << s.Base::m_A << endl;
+    // 2. 通过类名访问
+    cout << "通过类名访问" << endl;
+    cout << "Son 下 m_A = " << Son::m_A << endl;
+    // 第一个::代表通过类名方式访问, 第二个::代表通过类名方式访问
+    cout << "Base 下 m_A = " << Son::Base::m_A << endl;
+}
+// 同名静态函数
+void test02()
+{
+    // 1. 通过对象访问
+    Son s;
+    cout << "通过对象访问" << endl;
+    s.func();
+    s.Base::func();
+    // 2. 通过类名访问
+    cout << "通过类名访问" << endl;
+    Son::func();
+    Son::Base::func();
+    // 子类出现和父类同名静态成员函数, 也会隐藏父类中所有同名成员函数
+    // 如果想访问父类中被隐藏同名成员, 需要加作用域
+    Son::Base::func(100);
+}
+main()
+{
+    // test01();
+    test02();
+    return 0;
+}
+```
+
+#### 4.6.7 多继承语法
+
++ 语法 class 子类: 继承方式 父类1, 继承方式 父类2...
++ 多继承可能会引发父类中有同名成员出现, 需要加作用域区分
+
+```C++
+#include <iostream>
+using namespace std;
+
+// 多继承语法
+class Base1
+{
+public:
+    Base1()
+    {
+        m_A = 100;
+    }
+    int m_A;
+};
+class Base2
+{
+public:
+    Base2()
+    {
+        m_A = 200;
+    }
+    int m_A;
+};
+// 子类 需要继承Base1和Base2
+// 语法: class 子类 : 继承方式 父类, 继承方式 父类2...
+class Son : public Base1, public Base2
+{
+public:
+    Son()
+    {
+        m_C = 500;
+    }
+    int m_C;
+};
+void test01()
+{
+    Son s;
+    cout << "sizeof Son" << sizeof(s) << endl;
+    // 当父类中出现同名成员, 需要加作用域区分
+    cout << "m_A" << s.Base1::m_A << endl;
+    cout << "m_B" << s.Base2::m_A << endl;
+}
+main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 4.6.8 菱形继承
+
++ 菱形继承概论
+    1. 两个派生类继承同一个基类
+    2. 又有某个类同时继承两个派生类
+    3. 这种继承被称为菱形继承, 或者钻石继承
+
+```C++
+#include <iostream>
+using namespace std;
+
+// 动物类
+class Animal
+{
+public:
+    int m_Age;
+};
+// 利用虚继承解决菱形继承问题
+// 继承之前加上关键字virtual
+// Animal类称为虚基类
+// 羊类
+class Sheep : virtual public Animal
+{
+};
+// 驼类
+class Horse : virtual public Animal
+{
+};
+// 羊驼类
+class SheepHorse : public Sheep, public Horse
+{
+};
+void test01()
+{
+    SheepHorse s;
+    s.Sheep::m_Age = 20;
+    s.Horse::m_Age = 30;
+    // 当菱形继承, 当两个父类拥有相同数据, 需要加以作用域区分
+    cout << "s.Sheep::m_Age = " << s.Sheep::m_Age << endl;
+    cout << "s.Horse::m_Age = " << s.Horse::m_Age << endl;
+    cout << "s.m_Age = " << s.m_Age << endl;
+    // m_Age我们只需要一份就可以了, 菱形继承导致数据有两份, 资源浪费
+}
+main()
+{
+    test01();
+    return 0;
+}
+```
+
+### 4.7 多态
+
+#### 4.7.1 多态的基本概念
