@@ -1,50 +1,58 @@
 #include <iostream>
 using namespace std;
 
-// 多态
+// 虚析构和纯虚析构
 class Animal
 {
 public:
-    // void speak()
-    virtual void speak()
+    virtual void speak() = 0;
+    Animal()
     {
-        cout << "Animal speak" << endl;
+        cout << "Animal()构造函数" << endl;
     }
+    // 利用虚析构可以解决父类指针释放子类对象时不干净的问题
+    // virtual ~Animal()
+    // {
+    //     cout << "Animal()析构函数" << endl;
+    // }
+    virtual ~Animal() = 0; // 纯虚析构
 };
+// 纯虚析构需要声明也要实现
+// 有了纯虚析构之后, 这个类也属于抽象类, 无法实例化对象
+Animal::~Animal()
+{
+    cout << "Animal()纯虚析构函数" << endl;
+}
 class Cat : public Animal
 {
 public:
+    Cat(string name)
+    {
+        m_Name = new string(name);
+        cout << "Cat()构造函数" << endl;
+    }
     void speak()
     {
-        cout << "Cat speak" << endl;
+        cout << *m_Name << " cat speak" << endl;
     }
-};
-class Dog : public Animal
-{
-public:
-    void speak()
+    ~Cat()
     {
-        cout << "Dog speak" << endl;
+        if (m_Name != NULL)
+        {
+            cout << "Cat()析构函数" << endl;
+            delete m_Name;
+            m_Name = NULL;
+        }
     }
+    string *m_Name;
 };
-// 地址早绑定, 再编译阶段就确定了函数地址
-// 如果想执行让猫说话, 那么这个函数地址就不能提前绑定, 需要在运行阶段进行绑定
-// 动态多态满足条件
-// 1. 有继承关系
-// 2. 子类要重写父类的虚函数
-// 动态多态使用: 父类的指针或者引用 指向子类对象
-void doSpeak(Animal &a)
-{
-    a.speak();
-}
 void test01()
 {
-    Cat c;
-    doSpeak(c);
-    Dog d;
-    doSpeak(d);
+    Animal *animal = new Cat("Tom");
+    animal->speak();
+    delete animal;
 }
-main()
+int main()
 {
     test01();
     return 0;

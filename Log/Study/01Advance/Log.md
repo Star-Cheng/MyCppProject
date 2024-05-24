@@ -2179,3 +2179,304 @@ main()
     return 0;
 }
 ```
+
+#### 4.7.2 多态案例一: 计算器类
+
+```C++
+#include <iostream>
+using namespace std;
+
+// 计算器
+class Calculator
+{
+public:
+    int m_Num1;
+    int m_Num2;
+    int getRsult(string oper)
+    {
+        if (oper == "+")
+        {
+            return m_Num1 + m_Num2;
+        }
+        if (oper == "-")
+        {
+            return m_Num1 - m_Num2;
+        }
+        if (oper == "*")
+        {
+            return m_Num1 * m_Num2;
+        }
+        if (oper == "/")
+        {
+            return m_Num1 / m_Num2;
+        }
+        else
+        {
+            cout << "输入有误" << endl;
+            return 0;
+        }
+    }
+};
+// 利用多态实现计算器
+// 实现计算器抽象类
+class AbstractCalculator
+{
+public:
+    int m_Num1;
+    int m_Num2;
+    virtual int getResult() { return 0; };
+};
+class AddCalculator : public AbstractCalculator
+{
+public:
+    int getResult()
+    {
+        return m_Num1 + m_Num2;
+    }
+};
+class SubCalculator : public AbstractCalculator
+{
+public:
+    int getResult()
+    {
+        return m_Num1 - m_Num2;
+    }
+};
+class MulCalculator : public AbstractCalculator
+{
+public:
+    int getResult()
+    {
+        return m_Num1 * m_Num2;
+    }
+};
+void test01()
+{
+    Calculator c;
+    c.m_Num1 = 10;
+    c.m_Num2 = 10;
+    cout << c.m_Num1 << " + " << c.m_Num2 << " = " << c.getRsult("+") << endl;
+    cout << c.m_Num1 << " - " << c.m_Num2 << " = " << c.getRsult("-") << endl;
+    cout << c.m_Num1 << " * " << c.m_Num2 << " = " << c.getRsult("*") << endl;
+    cout << c.m_Num1 << " / " << c.m_Num2 << " = " << c.getRsult("/") << endl;
+}
+void test02()
+{
+    AbstractCalculator *abc = new AddCalculator;
+    abc->m_Num1 = 100;
+    abc->m_Num2 = 100;
+    cout << abc->m_Num1 << " + " << abc->m_Num2 << " = " << abc->getResult() << endl;
+    delete abc;
+    abc = new SubCalculator;
+    abc->m_Num1 = 100;
+    abc->m_Num2 = 100;
+    cout << abc->m_Num1 << " - " << abc->m_Num2 << " = " << abc->getResult() << endl;
+    delete abc;
+    abc = new MulCalculator;
+    abc->m_Num1 = 100;
+    abc->m_Num2 = 100;
+    cout << abc->m_Num1 << " * " << abc->m_Num2 << " = " << abc->getResult() << endl;
+}
+int main()
+{
+    // test01();
+    test02();
+    return 0;
+}
+```
+
+#### 4.7.3 纯虚函数和抽象类
+
++ 纯虚函数: virtual 返回值 函数名(参数列表) = 0;
++ 当类中有了纯虚函数, 这个类称为抽象类
++ 抽象类特点
+    1. 无法实例化对象
+    2. 子类必须重写抽象类中的纯虚函数, 否则也属于抽象类
+
+```C++
+#include <iostream>
+using namespace std;
+
+// 纯虚函数和抽象类
+class Base
+{
+public:
+    // 抽象类特点
+    // 1. 抽象类无法实例化对象
+    // 2. 抽象类自类必须要重写父类中的纯虚函数, 否则也属于抽象类
+    virtual void func() = 0; // 纯虚函数
+};
+class Son : public Base
+{
+public:
+    void func() // 子类需要重写纯虚函数才能成功实例化对象
+    {
+        cout << "son func" << endl;
+    }
+};
+void test01()
+{
+    Base *base = new Son;
+    base->func();
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 4.7.4 多态案例二: 制作饮品
+
+```C++
+#include <iostream>
+using namespace std;
+
+// 多态案例2 制作饮品
+class AbstractDrink
+{
+public:
+    virtual void Boil() = 0;
+    virtual void Brew() = 0;
+    virtual void PourInCup() = 0;
+    virtual void PutSomething() = 0;
+    virtual void make()
+    {
+        Boil();
+        Brew();
+        PourInCup();
+        PutSomething();
+    }
+};
+class Coffee : public AbstractDrink
+{
+public:
+    void Boil()
+    {
+        cout << "煮自来水" << endl;
+    }
+    void Brew()
+    {
+        cout << "冲泡咖啡" << endl;
+    }
+    void PourInCup()
+    {
+        cout << "倒入杯中" << endl;
+    }
+    void PutSomething()
+    {
+        cout << "加入牛奶" << endl;
+    }
+};
+class Tea : public AbstractDrink
+{
+public:
+    void Boil()
+    {
+        cout << "煮矿泉水" << endl;
+    }
+    void Brew()
+    {
+        cout << "冲泡茶叶" << endl;
+    }
+    void PourInCup()
+    {
+        cout << "倒入杯中" << endl;
+    }
+    void PutSomething()
+    {
+        cout << "加入枸杞" << endl;
+    }
+};
+void doWork(AbstractDrink *drink)
+{
+    drink->make();
+    delete drink;
+}
+void test01()
+{
+    doWork(new Coffee);
+    cout << "--------" << endl;
+    doWork(new Tea);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 4.7.5 虚析构和纯虚析构
+
++ 多态使用时, 如果子类中有属性开辟到堆区, 那么父类指针在释放时无法调用到子类的析构函数, 需要在父类中添加虚析构函数或者纯虚析构函数
++ 虚析构和纯虚析构的共性
+    1. 可以解决父类指针释放子类对象
+    2. 都需要有具体的函数实现
++ 虚析构和纯虚析构的区别
+    1. 如果是纯虚析构, 该类属于抽象类, 无法实例化对象
++ 总结
+    1. 虚析构或纯虚析构都可以解决父类指针释放子类对象时不干净的问题
+    2. 如果子类中没有堆区数据, 可以写虚析构或纯虚析构
+    3. 拥有纯虚析构函数的类也属于抽象类
+
+```C++
+#include <iostream>
+using namespace std;
+
+// 虚析构和纯虚析构
+class Animal
+{
+public:
+    virtual void speak() = 0;
+    Animal()
+    {
+        cout << "Animal()构造函数" << endl;
+    }
+    // 利用虚析构可以解决父类指针释放子类对象时不干净的问题
+    // virtual ~Animal()
+    // {
+    //     cout << "Animal()析构函数" << endl;
+    // }
+    virtual ~Animal() = 0; // 纯虚析构
+};
+// 纯虚析构需要声明也要实现
+// 有了纯虚析构之后, 这个类也属于抽象类, 无法实例化对象
+Animal::~Animal()
+{
+    cout << "Animal()纯虚析构函数" << endl;
+}
+class Cat : public Animal
+{
+public:
+    Cat(string name)
+    {
+        m_Name = new string(name);
+        cout << "Cat()构造函数" << endl;
+    }
+    void speak()
+    {
+        cout << *m_Name << " cat speak" << endl;
+    }
+    ~Cat()
+    {
+        if (m_Name != NULL)
+        {
+            cout << "Cat()析构函数" << endl;
+            delete m_Name;
+            m_Name = NULL;
+        }
+    }
+    string *m_Name;
+};
+void test01()
+{
+    Animal *animal = new Cat("Tom");
+    animal->speak();
+    delete animal;
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
