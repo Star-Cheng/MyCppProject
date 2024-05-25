@@ -1,59 +1,48 @@
 #include <iostream>
 using namespace std;
-
-// 虚析构和纯虚析构
-class Animal
+#include <fstream>
+// 二进制文件 写文件
+class Person
 {
 public:
-    virtual void speak() = 0;
-    Animal()
-    {
-        cout << "Animal()构造函数" << endl;
-    }
-    // 利用虚析构可以解决父类指针释放子类对象时不干净的问题
-    // virtual ~Animal()
-    // {
-    //     cout << "Animal()析构函数" << endl;
-    // }
-    virtual ~Animal() = 0; // 纯虚析构
-};
-// 纯虚析构需要声明也要实现
-// 有了纯虚析构之后, 这个类也属于抽象类, 无法实例化对象
-Animal::~Animal()
-{
-    cout << "Animal()纯虚析构函数" << endl;
-}
-class Cat : public Animal
-{
-public:
-    Cat(string name)
-    {
-        m_Name = new string(name);
-        cout << "Cat()构造函数" << endl;
-    }
-    void speak()
-    {
-        cout << *m_Name << " cat speak" << endl;
-    }
-    ~Cat()
-    {
-        if (m_Name != NULL)
-        {
-            cout << "Cat()析构函数" << endl;
-            delete m_Name;
-            m_Name = NULL;
-        }
-    }
-    string *m_Name;
+    char m_Name[64];
+    int m_Age;
 };
 void test01()
 {
-    Animal *animal = new Cat("Tom");
-    animal->speak();
-    delete animal;
+    // 1.创建Person对象
+    Person p = {"张三", 18};
+    // 2.创建流对象
+    ofstream ofs;
+    // 3.打开文件
+    ofs.open("person.txt", ios::out | ios::binary);
+    // 4.写文件
+    ofs.write((const char *)&p, sizeof(Person));
+    // 5.关闭文件
+    ofs.close();
+}
+void test02()
+{
+    // 1. 包含头文件
+    // 2. 创建流对象
+    ifstream ifs;
+    // 3. 打开文件
+    ifs.open("person.txt", ios::in | ios::binary);
+    if (!ifs.is_open())
+    {
+        cout << "文件打开失败" << endl;
+        return;
+    }
+    // 4. 读文件
+    Person p;
+    ifs.read((char *)&p, sizeof(Person));
+    cout << "姓名：" << p.m_Name << " 年龄：" << p.m_Age << endl;
+    // 5. 关闭文件
+    ifs.close();
 }
 int main()
 {
-    test01();
+    // test01(); // 写文件
+    test02(); // 读文件
     return 0;
 }

@@ -2480,3 +2480,243 @@ int main()
     return 0;
 }
 ```
+
+#### 4.7.6 多态案例三: 电脑组装
+
+```C++
+#include <iostream>
+using namespace std;
+
+// 多态案例三-电脑组装
+// 抽象不同零件类
+class CPU
+{
+public:
+    virtual void calculate() = 0;
+};
+class VideoCard
+{
+public:
+    virtual void display() = 0;
+};
+class Memory
+{
+public:
+    virtual void storage() = 0;
+};
+class Computer
+{
+public:
+    CPU *m_pCpu;
+    VideoCard *m_pVc;
+    Memory *m_pM;
+    Computer(CPU *pCpu, VideoCard *pVc, Memory *pM)
+    {
+        m_pCpu = pCpu;
+        m_pVc = pVc;
+        m_pM = pM;
+    }
+    virtual ~Computer()
+    {
+        if (m_pCpu)
+        {
+            delete m_pCpu;
+            m_pCpu = nullptr;
+        }
+        if (m_pVc)
+        {
+            delete m_pVc;
+            m_pVc = nullptr;
+        }
+        if (m_pM)
+        {
+            delete m_pM;
+            m_pM = nullptr;
+        }
+    }
+    void work()
+    {
+        m_pCpu->calculate();
+        m_pVc->display();
+        m_pM->storage();
+    }
+};
+// 具体厂商
+// Intel厂商
+class IntelCPU : public CPU
+{
+public:
+    virtual void calculate()
+    {
+        cout << "Intel CPU 计算" << endl;
+    }
+};
+class IntelVideoCard : public VideoCard
+{
+public:
+    virtual void display()
+    {
+        cout << "Intel VideoCard 显示" << endl;
+    }
+};
+class IntelMemory : public Memory
+{
+public:
+    virtual void storage()
+    {
+        cout << "Intel Memory 存储" << endl;
+    }
+};
+// 联想厂商
+class LenovoCPU : public CPU
+{
+public:
+    virtual void calculate()
+    {
+        cout << "Lenovo CPU 计算" << endl;
+    }
+};
+class LenovoVideoCard : public VideoCard
+{
+public:
+    virtual void display()
+    {
+        cout << "Lenovo VideoCard 显示" << endl;
+    }
+};
+class LenovoMemory : public Memory
+{
+public:
+    virtual void storage()
+    {
+        cout << "Lenovo Memory 存储" << endl;
+    }
+};
+void test01()
+{
+    // 第一台电脑零件
+    CPU *IntelCpu = new IntelCPU;
+    VideoCard *IntelVc = new IntelVideoCard;
+    Memory *IntelM = new IntelMemory;
+    // 创建第一台电脑
+    Computer *computer1 = new Computer(IntelCpu, IntelVc, IntelM);
+    computer1->work();
+    delete computer1;
+    cout << "--------------------" << endl;
+    // 第二台电脑组装
+    cout << "第二台电脑开始工作" << endl;
+    Computer *computer2 = new Computer(new LenovoCPU, new LenovoVideoCard, new LenovoMemory);
+    computer2->work();
+    delete computer2;
+    cout << "--------------------" << endl;
+    cout << "第三台电脑开始工作" << endl;
+    Computer *computer3 = new Computer(new LenovoCPU, new IntelVideoCard, new LenovoMemory);
+    computer3->work();
+    delete computer3;
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+## 5. 文件操作
+
++ 文件类型分为两种
+    1. 文本文件: 文件以文本的ASCII码形式存储
+    2. 二进制文件: 文件以文本的二进制形式存储
++ 操作文件的三大类
+    1. ofstream: 向文件中写入数据
+    2. ifstream: 从文件中读取数据
+    3. fstream: 同时进行读写操作
+
+### 5.1 文本文件
+
+#### 5.1.1 写文件
+
++ 写文件步骤如下
+    1. 包含头文件
+        + #include <"fstream">
+    2. 创建流对象
+        + ofstream ofs;
+    3. 打开文件
+        + ofs.open("文件路径", 模式);
+    4. 写数据
+        + ofs << "数据" << endl;
+    5. 关闭文件
+        + ofs.close();
++ 文件打开方式
+    1. ios::in
+        + 打开文件用于读取, 如果文件不存在则无法打开
+    2. ios::out
+        + 打开文件用于写入, 如果文件不存在则创建
+    3. ios::app
+        + 打开文件用于追加, 如果文件不存在则创建
+    4. ios::ate
+        + 打开文件用于追加, 如果文件不存在则创建, 并将文件指针移动到文件末尾
+    5. ios::trunc
+        + 打开文件用于写入, 如果文件存在则删除, 创建新文件
+    6. ios::binary
+        + 打开文件用于二进制操作, 默认为文本操作
+
+```C++
+#include <iostream>
+using namespace std;
+#include <fstream>
+// 文本文件 写文件
+void test01()
+{
+    ofstream ofs;
+    ofs.open("test.txt", ios::out);
+    ofs << "hello world" << endl;
+    ofs.close();
+}
+// 文本文件 读文件
+void test02()
+{
+    ifstream ifs;
+    ifs.open("test.txt", ios::in);
+    if (!ifs.is_open())
+    {
+        cout << "文件打开失败" << endl;
+        return;
+    }
+    // 读数据
+    // 第一种
+    // char buf1[1024] = {0};
+    // while (ifs >> buf1)
+    // {
+    //     cout << buf1 << endl;
+    // }
+    // // 第二种
+    // char buf[1024] = {0};
+    // while (ifs.getline(buf, sizeof(buf)))
+    // {
+    //     cout << buf << endl;
+    // }
+    // 第三种
+    string buf;
+    while (getline(ifs, buf))
+    {
+        cout << buf << endl;
+    }
+    // // 第四种
+    // char c;
+    // // while (ifs.get(c))
+    // while ((c = ifs.get()) != EOF)
+    // {
+    //     cout << c;
+    // }
+    // 关闭文件
+    ifs.close();
+}
+int main()
+{
+    // test01(); // 写文件
+    test02(); // 读文件
+    return 0;
+}
+```
+
+### 5.2 二进制文件
