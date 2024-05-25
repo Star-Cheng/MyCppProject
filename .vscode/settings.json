@@ -63,7 +63,13 @@
         "bit": "cpp",
         "compare": "cpp",
         "concepts": "cpp",
-        "numbers": "cpp"
+        "numbers": "cpp",
+        "codecvt": "cpp",
+        "condition_variable": "cpp",
+        "mutex": "cpp",
+        "semaphore": "cpp",
+        "stop_token": "cpp",
+        "variant": "cpp"
     },
     // "cmake.sourceDirectory": "C:/Users/13359/Documents/CppProject/Pcl/00base"
 }
