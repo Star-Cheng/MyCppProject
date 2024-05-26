@@ -5,7 +5,11 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "/usr/include/pcl-1.14",
+                "/usr/include",
+                "/usr/include/flann",
                 "/usr/include/eigen3",
+                "/usr/include/boost",
+                "/usr/include/eigen3/Eigen/",
                 "/usr/include/vtk-7.1"
             ],
             "defines": [
