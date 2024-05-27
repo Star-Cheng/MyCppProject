@@ -1,37 +1,44 @@
 #include <iostream>
 using namespace std;
+#include <string>
 
-// 普通函数与模板函数的区别
-// 1. 普通函数调用时可以发生自动类型转换(隐式类型转换)
-// 2. 函数模板调用时, 如果利用自动类型推导, 不会发生自动类型转换
-// 3. 如果利用显示类型转换, 可以发生自动类型转换
-// 普通函数
-int myAdd(int a, int b)
+// 提前让编译器知道Person类存在
+template <class T1, class T2>
+class Person;
+// 类外实现
+template <class T1, class T2>
+void showPerson(Person<T1, T2> p)
 {
-    return a + b;
-}
-// 函数模板
-template <class T>
-T myAdd2(T a, T b)
+    cout << "name: " << p.m_Name << ", age: " << p.m_Age << endl;
+};
+
+template <class T1, class T2>
+class Person
 {
-    return a + b;
-}
+public:
+    // 全局函数类内实现
+    // friend void showPerson(Person<T1, T2> p)
+    // {
+    //     cout << "name: " << p.m_Name << ", age: " << p.m_Age << endl;
+    // };
+    // 全局函数类外实现
+    // 加空模版参数列表
+    // 如果全局函数是类外, 需要让编译器提前知道这个函数的存在
+    friend void showPerson<>(Person<T1, T2> p);
+    Person(T1 name, T2 age)
+    {
+        this->m_Name = name;
+        this->m_Age = age;
+    };
+
+private:
+    T1 m_Name;
+    T2 m_Age;
+};
 void test01()
 {
-    int a = 10;
-    int b = 20;
-    char c = 'c';
-    cout << myAdd(a, b) << endl;
-    cout << myAdd(a, c) << endl; // 隐式类型转换, 将char类型转换为int类型
-
-    // 1. 自动类型推导
-    // 自动类型推导, 不会发生隐式类型转换
-    // cout << myAdd2(a, c) << endl; // error, a和c的类型不同, 不可以发生类型转换
-
-    // 2. 显示类型转换
-    // 显示制定类型, 会发生隐式类型转换
-    cout << myAdd2<int>(a, c) << endl;
-    cout << myAdd2<char>(a, c) << endl;
+    Person<string, int> p("Tom", 18);
+    showPerson(p);
 }
 int main()
 {
