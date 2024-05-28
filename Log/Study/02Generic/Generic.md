@@ -969,6 +969,188 @@ int main()
 }
 ```
 
-## 2. STL初识
+## 2 STL初识
 
-### 2.2 STL的诞生
+### 2.1 STL的诞生
+
++ 为了可重复利用, STL诞生
++ 为了建立数据结构和算法的一套标准, STL诞生
+
+### 2.2 STL基本概念
+
+1. STL(Standard Template Library, 标准模版库)
+2. STL从广义上分为: 容器(container), 算法(alworithm), 迭代器(iterator)
+3. 容器和算法之间通过迭代器进行无缝连接
+4. STL几乎所有代码都采用了模版类或者模版函数
+
+### 2.3 STL六大组件
+
++ 容器(container), 算法(alworithm), 迭代器(iterator), 仿函数(function object), 适配器(adapter), 序列容器(sequence container)
+    1. 容器: 各种数据结构, 如: vector, list, deque, set, map
+    2. 算法: 各种常用算法, 如: sort, find, for_each, count, accumulate
+    3. 迭代器: 扮演类容器与算法之间的胶水作用
+    4. 仿函数: 行为类似函数, 可作为算法的某种策略
+    5. 适配器: 一种用来修饰容器或者仿函数或迭代器接口的东西
+    6. 序列容器: 负责空间的配置与管理
+
+### 2.4 STL中容器, 算法, 迭代器
+
+1. 容器
+    1. 序列式容器: 强调值的排序, 序列式容器中的每个元素均有固定的位置
+    2. 关联式容器: 二叉树结构, 各元素之间没有严格的物理上的顺序关系
+
+2. 算法
+    1. 质变算法: 运算过程中会改变区间内的元素内容
+    2. 非质变算法: 指运算过程中不会改变区间内的元素内容
+
+3. 迭代器: 迭代器使用非常类似于指针
+    1. 输入迭代器: 只能进行输入, 不能进行输出
+    2. 输出迭代器: 只能进行输出, 不能进行输入
+    3. 前向迭代器: 既可以进行输入, 也可以进行输出, 但是只能单向移动
+    4. 双向迭代器: 既可以进行输入, 也可以进行输出, 同时可以双向移动
+    5. 随机访问迭代器: 既可以进行输入, 也可以进行输出, 同时可以双向移动, 而且可以任意访问任意位置的元素
+
+### 2.5 容器算法迭代器初识
+
+#### 2.5.1 Vector存放内置数据类型
+
++ 容器: vector
++ 算法: for_each
++ 迭代器: vector《int》::iterator
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+
+void myPring(int value)
+{
+    cout << value << endl;
+}
+// vector容器存放内置数据类型
+void test01()
+{
+    vector<int> v; // 创建一个vector容器, 当成数组使用
+    v.push_back(10);
+    v.push_back(20);
+    v.push_back(30);
+    // 通过迭代器访问容器中的数据
+    vector<int>::iterator itBegin = v.begin(); // 起始迭代器, 指向容器中第一个元素的前面
+    vector<int>::iterator itEnd = v.end();     // 结束迭代器, 指向容器中最后一个元素的下一个位置
+    // 第一种遍历
+    while (itBegin != itEnd)
+    {
+        cout << *itBegin << endl;
+        itBegin++;
+    }
+    // 第二种遍历
+    for (vector<int>::iterator it = v.begin(); it != v.end(); it++)
+    {
+        cout << *it << endl;
+    }
+    // 第三种遍历, 利用STL提供的遍历算法
+    for_each(v.begin(), v.end(), myPring);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 2.5.2 Vector存放自定义数据类型
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+
+// Vector存放自定义数据类型
+class Person
+{
+public:
+    string m_Name;
+    int m_Age;
+    Person(string name, int age)
+    {
+        this->m_Name = name;
+        this->m_Age = age;
+    }
+};
+void test01()
+{
+    vector<Person> v;
+    Person p1("孙悟空", 100);
+    Person p2("猪八戒", 80);
+    Person p3("唐僧", 30);
+    v.push_back(p1);
+    v.push_back(p2);
+    v.push_back(p3);
+    for (vector<Person>::iterator it = v.begin(); it != v.end(); it++)
+    {
+        cout << "姓名：" << (*it).m_Name << " 年龄：" << (*it).m_Age << endl;
+        cout << "姓名：" << it->m_Name << " 年龄：" << it->m_Age << endl;
+    }
+}
+
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 2.5.4 Vector容器嵌套容器
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+
+// Vector容器嵌套容器
+void test01()
+{
+    vector<vector<int>> v;
+    // 小容器
+    vector<int> v1;
+    vector<int> v2;
+    vector<int> v3;
+    vector<int> v4;
+    // 向小容器中添加元素
+    for (int i = 0; i < 4; i++)
+    {
+        v1.push_back(i + 1);
+        v2.push_back(i + 2);
+        v3.push_back(i + 3);
+        v4.push_back(i + 4);
+    }
+    // 将小容器添加到大容器中
+    v.push_back(v1);
+    v.push_back(v2);
+    v.push_back(v3);
+    v.push_back(v4);
+    // 通过大容器, 把所有数据遍历一遍
+    for (vector<vector<int>>::iterator it = v.begin(); it != v.end(); it++)
+    {
+        // (*it) ---- 容器vector<int>
+        for (vector<int>::iterator vit = (*it).begin(); vit != (*it).end(); vit++)
+        {
+            cout << *vit << " ";
+        }
+        cout << endl;
+    }
+}
+
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+### 3.1 string容器
+
+#### 3.1.1 string基本概念
