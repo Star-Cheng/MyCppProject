@@ -1461,3 +1461,388 @@ int main()
 ### 3.2 vector容器
 
 #### 3.2.1 vector基本概念
+
++ 功能: vector数据结构和数组非常相似, 也称为单端数组
++ vector与普通数组区别: 不同之处在于数组是静态空间, 而vector可以动态扩展
++ 动态扩展: 并不是在原空间之后继续接新空间, 而是找更大的内存空间, 然后将原来数据拷贝到新空间中, 再释放原空间
+
+#### 3.2.2 vector构造函数
+
++ 函数原型
+    1. vector《T》v;                // 采用模版类实现， 默认构造函数
+    2. vector(v.begin(), v.end()); // 将v(begin(), v.end())区间中的元素拷贝给本身
+    3. vector(n, elem);            //将构造函数将n个elem拷贝给本身
+    4. vector(const vector &v);    // 拷贝构造函数
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+
+void printVector(vector<int> &v)
+{
+    for (vector<int>::iterator it = v.begin(); it != v.end(); it++)
+    {
+        cout << *it << " ";
+    }
+    cout << endl;
+}
+// vector构造函数
+void test01()
+{
+    vector<int> v1;
+    for (int i = 0; i < 10; i++)
+    {
+        v1.push_back(i);
+    }
+    printVector(v1);
+    // 通过区间方式进行构造
+    vector<int> v2(v1.begin(), v1.end());
+    printVector(v2);
+    // n个elem方式构造
+    vector<int> v3(5, 100);
+    printVector(v3);
+    // 拷贝构造
+    vector<int> v4(v3);
+    printVector(v4);
+}
+
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.2.3 vector赋值操作
+
++ 函数原型
+    1. vector& operator=(const vector &v); //重载等号操作符
+    2. assign(begin, end);                 // 将[begin, end)区间中的数据拷贝赋值给本身
+    3. assign(n, elem);                    // 将n个elem拷贝赋值给本身
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+
+void printVector(vector<int> &v)
+{
+    for (auto x : v)
+    {
+        cout << x << " ";
+    }
+    cout << endl;
+}
+// vector赋值操作
+void test01()
+{
+    vector<int> v1;
+    for (int i = 0; i < 10; i++)
+    {
+        v1.push_back(i);
+    }
+    printVector(v1);
+    // 赋值 operator=
+    vector<int> v2;
+    v2 = v1;
+    printVector(v2);
+    // 赋值 assign
+    vector<int> v3;
+    v3.assign(v1.begin(), v1.end());
+    printVector(v3);
+    // n个elem方式赋值
+    vector<int> v4;
+    v4.assign(5, 100);
+    printVector(v4);
+}
+
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.2.4 vector容量和大小
+
++ 函数原型
+    1. empty();               // 判断容器是否为空
+    2. capacity();            // 容器的容量
+    3. size();                // 返回容器中元素的个数
+    4. resize(int num);       //重新指定容器的长度为num, 如果容器变长, 新位置的元素默认初始化
+    5. resize(int num, elem); //重新指定容器的长度为num, 如果容器变长, 新位置的元素初始化为elem, 如果容器变短, 容器中多出的元素被删除
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+
+void printVector(vector<int> &v)
+{
+    for (auto x : v)
+    {
+        cout << x << " ";
+    }
+    cout << endl;
+}
+// vector容量和大小
+void test01()
+{
+    vector<int> v1;
+    for (int i = 0; i < 10; i++)
+    {
+        v1.push_back(i);
+    }
+    printVector(v1);
+    if (v1.empty())
+    {
+        cout << "v1为空" << endl;
+    }
+    else
+    {
+        cout << "v1不为空" << endl;
+        cout << "v1的容量为: " << v1.capacity() << endl;
+        cout << "v1的大小为: " << v1.size() << endl;
+    }
+    // 重新指定大小
+    v1.resize(15, 100); // 如果重新指定的比原来的长, 默认用0填充, 这里设置100填充
+    printVector(v1);
+    v1.resize(5); // 如果重新指定的比原来的短, 超出部分会删除掉
+    printVector(v1);
+}
+
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.2.5 vector插入和删除
+
++ 函数原型
+    1. push_back(ele); // 在容器尾部添加元素
+    2. pop_back();                                      // 删除容器最后一个元素
+    3. insert(const_iterator ois, ele);                 // 迭代器指向位置pos处, 插入元素ele
+    4. insert(const_iterator pos, int count, ele)       // 迭代器指向位置pos处, 插入count个元素ele
+    5. erase(const_iterator pos); // 删除迭代器指向的元素
+    6. erase(const_iterator start, const_iterator end); // 删除迭代器start到end之间的元素
+    7. clear();                                         // 删除容器中所有元素
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+
+void printVector(vector<int> &v)
+{
+    for (auto x : v)
+    {
+        cout << x << " ";
+    }
+    cout << endl;
+}
+// vector插入和删除
+void test01()
+{
+    vector<int> v1;
+    for (int i = 1; i < 6; i++)
+    {
+        v1.push_back(i * 10);
+    }
+    printVector(v1);
+    // 尾删
+    v1.pop_back();
+    printVector(v1);
+    // 插入
+    v1.insert(v1.begin(), 100); // 第一个参数是迭代器
+    printVector(v1);
+    v1.insert(v1.begin(), 2, 1000);
+    printVector(v1);
+    // 删除
+    v1.erase(v1.begin());
+    printVector(v1);
+    v1.erase(v1.begin(), v1.end()); // 相当于清空
+    printVector(v1);
+    v1.clear();
+    printVector(v1);
+}
+
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.2.6 vector数据存取
+
++ 函数原型
+    1. at(int idx);              // 返回索引idx所指的数据
+    2. operator[];               // 返回索引idx所指的数据
+    3. front();                  // 返回容器中第一个数据元素
+    4. back();                   // 返回容器中最后一个数据元素
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+
+// vector数据存取
+void test01()
+{
+    vector<int> v1;
+    for (int i = 0; i < 10; i++)
+    {
+        v1.push_back(i);
+    }
+    // 利用迭代器访问元素
+    for (auto x : v1)
+    {
+        cout << x << " ";
+    }
+    cout << endl;
+    // 利用[]访问元素
+    for (int i = 0; i < v1.size(); i++)
+    {
+        cout << v1[i] << " ";
+    }
+    cout << endl;
+    // 利用at访问元素
+    for (int i = 0; i < v1.size(); i++)
+    {
+        cout << v1.at(i) << " ";
+    }
+    cout << endl;
+    // 获取第一个元素
+    cout << "第一个元素：" << v1.front() << endl;
+    // 获取最后一个元素
+    cout << "最后一个元素: " << v1.back() << endl;
+}
+
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.2.7 vector互换容器
+
++ 函数原型
+    1. swap(v); // 将v与本身的元素互换
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+
+// vector互换容器
+void printVector(vector<int> &v)
+{
+    for (auto x : v)
+    {
+        cout << x << " ";
+    }
+    cout << endl;
+}
+// 1. 基本使用
+void test01()
+{
+    vector<int> v1;
+    for (int i = 0; i < 10; i++)
+    {
+        v1.push_back(i);
+    }
+    printVector(v1);
+    vector<int> v2;
+    for (int i = 10; i > 0; i--)
+    {
+        v2.push_back(i);
+    }
+    cout << "交换前: " << endl;
+    printVector(v2);
+    v1.swap(v2);
+    cout << "交换后: " << endl;
+    printVector(v1);
+    printVector(v2);
+}
+// 2. 实际用途: 巧用swap可以收缩内存空间
+void test02()
+{
+    vector<int> v;
+    for (int i = 0; i < 100000; i++)
+    {
+        v.push_back(i);
+    }
+    cout << "v的容量: " << v.capacity() << endl;
+    cout << "v的大小: " << v.size() << endl;
+    v.resize(3);
+    cout << "v的容量: " << v.capacity() << endl;
+    cout << "v的大小: " << v.size() << endl;
+    // 巧用swap收缩内存空间
+    vector<int>(v).swap(v); // vector<int>(v) 创建一个匿名对象, 再用swap收缩内存空间, 因为匿名对象执行完就会自动释放空间
+    cout << "v的容量: " << v.capacity() << endl;
+    cout << "v的大小: " << v.size() << endl;
+    printVector(v);
+}
+
+int main()
+{
+    test01();
+    test02();
+    return 0;
+}
+```
+
+#### 3.2.8 vector预留空间
+
++ 函数原型
+    1. reserve(int num); // 预留容器空间, 不会改变容器的大小, 预留的容器大小不会小于num
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+
+// vector预留空间
+void printVector(vector<int> &v)
+{
+    for (auto x : v)
+    {
+        cout << x << " ";
+    }
+    cout << endl;
+}
+void test01()
+{
+    vector<int> v;
+    // 利用reserve提前指定容器的容量
+    v.reserve(100000);
+    int num = 0;
+    int *p = NULL;
+    for (int i = 0; i < 100000; i++)
+    {
+        v.push_back(i);
+        if (p != &v[0])
+        {
+            p = &v[0];
+            num++;
+        }
+    }
+    cout << "capacity:" << v.capacity() << endl;
+    cout << "size:" << v.size() << endl;
+    cout << num << endl;
+}
+
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+### 3.3 deque容器
+
+#### 3.3.1 deque容器基本概念

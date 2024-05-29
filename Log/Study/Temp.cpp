@@ -1,27 +1,39 @@
 #include <iostream>
 using namespace std;
-#include <string>
+#include <vector>
 
-// string子串
+// vector预留空间
+void printVector(vector<int> &v)
+{
+    for (auto x : v)
+    {
+        cout << x << " ";
+    }
+    cout << endl;
+}
 void test01()
 {
-    string str = "hello world";
-    string substr = str.substr(0, 5);
-    cout << "substr = " << substr << endl;
-}
-// 使用操作
-void test02()
-{
-    string email = "xiaoming@qq.com";
-    // 从邮件中获取用户名信息
-    int pos = email.find("@");
-    string name = email.substr(0, pos);
-    cout << "name = " << name << endl;
+    vector<int> v;
+    // 利用reserve提前指定容器的容量
+    v.reserve(100000);
+    int num = 0;
+    int *p = NULL;
+    for (int i = 0; i < 100000; i++)
+    {
+        v.push_back(i);
+        if (p != &v[0])
+        {
+            p = &v[0];
+            num++;
+        }
+    }
+    cout << "capacity:" << v.capacity() << endl;
+    cout << "size:" << v.size() << endl;
+    cout << num << endl;
 }
 
 int main()
 {
     test01();
-    test02();
     return 0;
 }
