@@ -1154,3 +1154,310 @@ int main()
 ### 3.1 string容器
 
 #### 3.1.1 string基本概念
+
++ 本质: string是C++风格的字符串, 而string本质上是一个类
+
+#### 3.1.2 string的构造函数
+
+```C++
+#include <iostream>
+using namespace std;
+#include <string>
+ 
+// string的构造函数
+void test01()
+{
+    string s1;                // 默认构造
+    string s2("hello world"); // C风格字符串构造
+    string s3(s2);            // 拷贝构造
+    string s4(11, 'a');       // 指定长度和字符构造
+    cout << s1 << endl;
+    cout << s2 << endl;
+    cout << s3 << endl;
+    cout << s4 << endl;
+}
+
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.1.3 string的赋值操作
+
++ 赋值的函数原型
+    1. string& operator=(const char *str);   // char*类型字符串
+    2. string& operator=(const string& &s);  // 把字符串s赋值给当前的字符串
+    3. string& operator(char c);             // 字符赋值给当前的字符串
+    4. string& assign(const char *s);        // 把字符串s赋给当前字符串
+    5. string& assign(const char *s, int n); // 把字符串s的前n个字符串赋给当前的字符串
+    6. string& assign(const string& s);      // 把字符串s赋给当前字符串
+    7. string& assign(int n, char c);        // 将n个字符c赋给当前字符串
+
+```C++
+#include <iostream>
+using namespace std;
+#include <string>
+
+// string的赋值操作
+void test01()
+{
+    string str1 = "hello"; // char*类型字符串赋值给当前的字符串
+    cout << "str1 = " << str1 << endl;
+
+    string str2 = str1; // 拷贝构造函数
+    cout << "str2 = " << str2 << endl;
+    string str3;
+    str3 = 'a';
+    cout << "str3 = " << str3 << endl;
+    string str4;
+    str4.assign("hello");
+    str4.append("world");
+    cout << "str4 = " << str4 << endl;
+    string str5;
+    str5.assign("hello", 3); // 把字符串"hello"的前3个字符串赋给当前的字符串
+    cout << "str5 = " << str5 << endl;
+    str5.assign("hello", 3, 2); // 把字符串"hello"的第3个字符串开始，往后的2个字符串赋给当前的字符串
+    cout << "str5 = " << str5 << endl;
+    string str6;
+    str6.assign(str1);
+    cout << "str6 = " << str6 << endl;
+    string str7;
+    str7.assign(10, 'w');
+    cout << "str7 = " << str7 << endl;
+}
+
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.1.4 string字符串拼接
+
++ 实现在字符串末尾拼接字符串
++ 函数原型
+    1. string& operator+=(const string& str);           // 重载+=操作符
+    2. string& operator+=(const char c);                // 重载+=操作符
+    3. string& operator+=(const string& str);           // 重载+=操作符
+    4. string& append(const char *s);                   // 把字符串s连接到当前字符串结尾
+    5. string& append(const char *s, int n);            // 把字符串s的前n个字符连接到当前字符串结尾
+    6. string& append(const string& s);                 // 同operator+=(const string& str)
+    7. string& append(const string& s, int pos, int n); // 从pos位置开始的n个字符连接到当前字符串结尾
+
+```C++
+#include <iostream>
+using namespace std;
+#include <string>
+
+// string字符串拼接
+void test01()
+{
+    string str1 = "I like ";
+    string str2 = "play games ";
+    str1 += str2;
+    cout << str1 << endl;
+    string str3 = "LOL ";
+    str1.append(str3);
+    cout << str1 << endl;
+    str1.append("DNF DNF", 4);
+    cout << str1 << endl;
+    string str4 = "CF ";
+    str1.append(str4);
+    cout << str1 << endl;
+    str1.append("abc csgo", 4, -1);
+    cout << str1 << endl;
+}
+
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.1.5 string字符串的查找和替换
+
++ 查找: 查找指定字符串是否存在
++ 替换: 在指定的位置替换字符串
+
+```C++
+#include <iostream>
+using namespace std;
+#include <string>
+
+// string字符串的查找和替换
+// 1. 查找
+void test01()
+{
+    string str1 = "abcdefgde";
+    int pos = str1.find("de");
+    cout << "pos = " << pos << endl; // find()从左往右找
+    pos = str1.rfind("de");
+    cout << "pos = " << pos << endl; // rfind()从右往左找
+}
+// 2. 替换
+void test02()
+{
+    string str1 = "abcdefgde";
+    str1.replace(1, 3, "1111111111"); // 把1号位置起3个字符替换成1111111111
+    cout << "str1 = " << str1 << endl;
+}
+
+int main()
+{
+    test01();
+    test02();
+    return 0;
+}
+```
+
+#### 3.1.6 string字符串比较
+
++ 比较方式: 比较是按字符串的ASCII码值大小比较的
+    1. "=" 返回 0
+    2. ">" 返回 1
+    3. "<" 返回 -1
+
+```C++
+#include <iostream>
+using namespace std;
+#include <string>
+
+// string字符串比较
+void test01()
+{
+    string str1 = "hello";
+    string str2 = "hello";
+    if (str1.compare(str2) == 0)
+    {
+        cout << "str1 == str2" << endl;
+    }
+    else if (str1.compare(str2) > 0)
+    {
+        cout << "str1 > str2" << endl;
+    }
+    else
+    {
+        cout << "str1 < str2" << endl;
+    }
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.1.7 string字符存取
+
++ 函数原型
+    1. char& operator[](int n); // 重载[]操作符
+    2. char& at(int n);         // 通过at方法获取字符
+
+```C++
+#include <iostream>
+using namespace std;
+#include <string>
+
+// string字符存取
+void test01()
+{
+    string str = "hello";
+    cout << "str = " << str << endl;
+    // 1. 通过[]访问单个字符
+    for (int i = 0; i < str.size(); i++)
+    {
+        cout << str[i] << " ";
+    }
+    cout << endl;
+    // 2. 通过at访问单个字符
+    for (int i = 0; i < str.size(); i++)
+    {
+        cout << str.at(i) << " ";
+    }
+    cout << endl;
+    // 修改单个字符
+    str[0] = 'x';
+    cout << "str = " << str << endl;
+    str.at(1) = 'x';
+    cout << "str = " << str << endl;
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.1.8 string字符串的插入和删除
+
++ 函数原型
+    1. string& insert(int pos, const char *s);     // 在pos位置插入字符串s
+    2. string& insert(int pos, const string& str); // 在pos位置插入字符串str
+    3. string& insert(int pos, int n, char c);     // 在pos位置插入n个字符c
+    4. string& erase(int pos, int n = npos);       // 删除从pos开始的n个字符
+
+```C++
+#include <iostream>
+using namespace std;
+#include <string>
+
+// string字符串的插入和删除
+void test01()
+{
+    string str = "hello world";
+    str.insert(0, "the ");
+    str.insert(0, string("what is "));
+    cout << str << endl;
+    str.erase(0, 8);
+    cout << str << endl;
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.1.9 string子串
+
++ 功能描述: 从字符串中获取子串
++ 函数原型
+    1. string substr(int pos = 0, int n = npos) const; // 返回由pos开始的n个字符组成的字符串
+
+```C++
+#include <iostream>
+using namespace std;
+#include <string>
+
+// string子串
+void test01()
+{
+    string str = "hello world";
+    string substr = str.substr(0, 5);
+    cout << "substr = " << substr << endl;
+}
+// 使用操作
+void test02()
+{
+    string email = "xiaoming@qq.com";
+    // 从邮件中获取用户名信息
+    int pos = email.find("@");
+    string name = email.substr(0, pos);
+    cout << "name = " << name << endl;
+}
+
+int main()
+{
+    test01();
+    test02();
+    return 0;
+}
+```
+
+### 3.2 vector容器
+
+#### 3.2.1 vector基本概念
