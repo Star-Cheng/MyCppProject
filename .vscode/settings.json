@@ -69,7 +69,8 @@
         "mutex": "cpp",
         "semaphore": "cpp",
         "stop_token": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "climits": "cpp"
     },
     // "cmake.sourceDirectory": "C:/Users/13359/Documents/CppProject/Pcl/00base"
 }

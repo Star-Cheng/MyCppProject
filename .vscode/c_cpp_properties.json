@@ -10,7 +10,8 @@
                 "/usr/include/eigen3",
                 "/usr/include/boost",
                 "/usr/include/eigen3/Eigen/",
-                "/usr/include/vtk-7.1"
+                "/usr/include/vtk-7.1",
+                "/usr/include/mysql"
             ],
             "defines": [
                 "_DEBUG",

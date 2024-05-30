@@ -1,37 +1,31 @@
 #include <iostream>
 using namespace std;
-#include <vector>
+#include <deque>
+#include <algorithm> // 标准库算法
 
-// vector预留空间
-void printVector(vector<int> &v)
+void printDeque(deque<int> &d)
 {
-    for (auto x : v)
+    for (auto x : d)
     {
         cout << x << " ";
     }
     cout << endl;
 }
+// deque排序
 void test01()
 {
-    vector<int> v;
-    // 利用reserve提前指定容器的容量
-    v.reserve(100000);
-    int num = 0;
-    int *p = NULL;
-    for (int i = 0; i < 100000; i++)
-    {
-        v.push_back(i);
-        if (p != &v[0])
-        {
-            p = &v[0];
-            num++;
-        }
-    }
-    cout << "capacity:" << v.capacity() << endl;
-    cout << "size:" << v.size() << endl;
-    cout << num << endl;
+    deque<int> d1;
+    d1.push_back(10);
+    d1.push_back(20);
+    d1.push_front(100);
+    d1.push_front(200);
+    printDeque(d1);
+    // 对于支持随机访问迭代器的容器，都可以使用标准库算法
+    sort(d1.begin(), d1.end()); // 升序, 默认从小到大
+    printDeque(d1);
+    sort(d1.begin(), d1.end(), greater<int>()); // 降序
+    printDeque(d1);
 }
-
 int main()
 {
     test01();

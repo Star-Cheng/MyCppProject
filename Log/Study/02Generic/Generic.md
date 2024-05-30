@@ -1846,3 +1846,298 @@ int main()
 ### 3.3 deque容器
 
 #### 3.3.1 deque容器基本概念
+
++ 功能: 双端数组, 可以对头端进行插入删除操作
++ deque与vector的区别
+    1. vector是数组, 是静态空间, 插入删除效率低
+    2. deque是双端数组, 是动态空间, 插入删除效率高
+    3. vector访问元素时的速度比deque快, 这和两者内部实现有关
+
+#### 3.3.2 deque构造函数
+
++ 函数原型
+    1. deque《T》 deqT;          // 默认构造函数
+    2. deque(beg, end);         // 构造函数将[beg, end)区间中的元素拷贝给本身)
+    3. deque(n, elem);          // 构造函数将n个elem拷贝给本身
+    4. deque(const deque &deq); // 拷贝构造函数
+
+```C++
+#include <iostream>
+using namespace std;
+#include <deque>
+
+void printDeque(const deque<int> &d)
+{
+    for (auto x : d)
+    {
+        cout << x << " ";
+    }
+    cout << endl;
+}
+// deque构造函数
+void test01()
+{
+    deque<int> d1;
+    for (int i = 0; i < 10; i++)
+    {
+        d1.push_back(i);
+    }
+    printDeque(d1);
+    deque<int> d2(d1.begin(), d1.end());
+    printDeque(d2);
+    deque<int> d3(5, 100);
+    printDeque(d3);
+    deque<int> d4(d3);
+    printDeque(d4);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.3.3 deque赋值操作
+
++ 函数原型
+    1. deque &operator=(const deque &deq); // 重载等号操作符
+    2. assign(beg, end);                   // 将[beg, end)区间中的数据拷贝赋值给本身
+    3. assign(n, elem);                    // 将n个elem拷贝赋值给本身
+
+```C++
+#include <iostream>
+using namespace std;
+#include <deque>
+
+void printDeque(const deque<int> &d)
+{
+    for (auto x : d)
+    {
+        cout << x << " ";
+    }
+    cout << endl;
+}
+// deque赋值操作
+void test01()
+{
+    deque<int> d1;
+    for (int i = 0; i < 10; i++)
+    {
+        d1.push_back(i);
+    }
+    printDeque(d1);
+    // operator赋值
+    deque<int> d2;
+    d2 = d1;
+    printDeque(d2);
+    // assign赋值
+    deque<int> d3;
+    d3.assign(d1.begin(), d1.end());
+    printDeque(d3);
+    deque<int> d4;
+    d4.assign(5, 100);
+    printDeque(d4);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.3.4 deque大小操作
+
++ 函数原型
+    1. empty();             // 判断容器是否为空
+    2. size();              // 返回容器中元素的数目
+    3. resize(num);         // 将容器中元素个数改变为num
+    4. resize(num, elem);   // 将容器中元素个数改变为num, 并将每个元素初始化为elem
+
+```C++
+#include <iostream>
+using namespace std;
+#include <deque>
+
+void printDeque(const deque<int> &d)
+{
+    for (auto x : d)
+    {
+        cout << x << " ";
+    }
+    cout << endl;
+}
+// deque赋值操作
+void test01()
+{
+    deque<int> d1;
+    for (int i = 0; i < 10; i++)
+    {
+        d1.push_back(i);
+    }
+    printDeque(d1);
+    if (d1.empty())
+    {
+        cout << "d1为空" << endl;
+    }
+    else
+    {
+        cout << "d1不为空" << endl;
+        cout << "d1的大小为: " << d1.size() << endl;
+        cout << "d1的第一个元素为: " << d1.front() << endl;
+        cout << "d1的最后一个元素为: " << d1.back() << endl;
+    }
+    // 重新指定大小
+    d1.resize(15, 100); // 默认值为0填充, 这里设置为100
+    printDeque(d1);
+    d1.resize(5);
+    printDeque(d1);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.3.5 deque插入和删除
+
++ 函数原型
+    1. push_back(elem);                             // 在容器尾部添加元素
+    2. pop_back();                                  // 删除容器最后一个元素
+    3. push_front(elem);                            // 在容器头部添加元素
+    4. pop_front();                                 // 删除容器第一个元素
+    5. insert(const_iterator pos, elem);            // 在pos位置插入elem元素的拷贝, 返回新数据的位置
+    6. insert(const_iterator pos, int count, elem); // 在pos位置插入count个elem数据
+    7. erase(const_iterator pos, beg, end);         // 在pos位置插入[beg, end)区间的数据, 无返回值
+    8. erase(beg, end);                             // 删除[beg, end)区间的数据, 返回删除数据的最后一个位置的next()
+    9. erase(const_iterator pos);                   // 删除pos位置的元素, 返回下一个元素的位置
+    10. clear();                                    // 删除容器中所有数据
+
+```C++
+#include <iostream>
+using namespace std;
+#include <deque>
+
+void printDeque(const deque<int> &d)
+{
+    for (auto x : d)
+    {
+        cout << x << " ";
+    }
+    cout << endl;
+}
+// deque插入和删除
+void test01()
+{
+    deque<int> d1;
+    for (int i = 3; i > 0; i--)
+    {
+        d1.push_front(i); // 头插
+        d1.push_back(i);  // 尾插
+    }
+    printDeque(d1);
+    d1.pop_back();  // 尾删
+    d1.pop_front(); // 头删
+    printDeque(d1);
+    d1.insert(d1.begin(), 10);    // insert插入1个10
+    d1.insert(d1.begin(), 2, 10); // insert插入2个10
+    printDeque(d1);
+    d1.insert(d1.begin(), d1.end() - 2, d1.end()); // insert插入d1.end()-2到d1.end()之间的元素
+    printDeque(d1);
+    d1.erase(d1.begin()); // erase删除
+    printDeque(d1);
+    d1.erase(d1.begin(), d1.end() - 2); // erase删除d1.begin()到d1.end()-2之间的元素
+    printDeque(d1);
+    d1.clear(); // 清空
+    printDeque(d1);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.3.6 deque数据存取
+
++ 函数原型
+    1. at(int idx);  // 返回索引idx所指的数据
+    2. operator[];  // 返回索引idx所指的数据
+    3. front();     // 返回容器中第一个数据元素
+    4. back();      // 返回容器中最后一个数据元素
+
+```C++
+#include <iostream>
+using namespace std;
+#include <deque>
+
+// deque数据存取
+void test01()
+{
+    deque<int> d1;
+    for (int i = 5; i > 0; i--)
+    {
+        d1.push_front(i); // 头插
+    }
+    // 通过[]访问
+    for (int i = 0; i < d1.size(); i++)
+    {
+        cout << d1[i] << " ";
+    }
+    cout << endl;
+    // 通过at访问
+    for (int i = 0; i < d1.size(); i++)
+    {
+        cout << d1.at(i) << " ";
+    }
+    cout << endl;
+    cout << "d1.front():" << d1.front() << endl;
+    cout << "d1.back():" << d1.back() << endl;
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.3.7 deque排序
+
++ 函数原型
+    1. sort(iterator beg, iterator end); // 将容器中的数据进行排序
+
+```C++
+#include <iostream>
+using namespace std;
+#include <deque>
+#include <algorithm> // 标准库算法
+
+void printDeque(deque<int> &d)
+{
+    for (auto x : d)
+    {
+        cout << x << " ";
+    }
+    cout << endl;
+}
+// deque排序
+void test01()
+{
+    deque<int> d1;
+    d1.push_back(10);
+    d1.push_back(20);
+    d1.push_front(100);
+    d1.push_front(200);
+    printDeque(d1);
+    // 对于支持随机访问迭代器的容器，都可以使用标准库算法
+    sort(d1.begin(), d1.end()); // 升序, 默认从小到大
+    printDeque(d1);
+    sort(d1.begin(), d1.end(), greater<int>()); // 降序
+    printDeque(d1);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
