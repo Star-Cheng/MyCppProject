@@ -2705,3 +2705,401 @@ int main()
 ### 3.8 set/multiset容器
 
 #### 3.8.1 set基本概念
+
++ 所有元素都会在插入时自动排序
++ set/multiset属于关联式容器，底层结构是二叉树
++ set和multiset区别
+    1. set不允许容器中有重复元素
+    2. multiset允许容器中有重复元素
+
+#### 3.8.2 set构造和赋值
+
++ 构造
+    1. set《T》 set1; // 默认构造
+    2. set(const set& set1) // 拷贝构造
++ 赋值
+    1. set& operator=(const set& set1); // 赋值操作符重载
+
+```C++
+#include <iostream>
+using namespace std;
+#include <set>
+
+void printSet(const set<int> &s)
+{
+    for (set<int>::const_iterator it = s.begin(); it != s.end(); it++)
+        cout << *it << " ";
+    cout << endl;
+}
+// set构造和赋
+void test01()
+{
+    set<int> s1;
+    // 插入数据只有insert方式
+    s1.insert(20);
+    s1.insert(10);
+    s1.insert(30);
+    s1.insert(20);
+    // 遍历容器
+    // set容器特点: 所有元素插入时候自动被排序
+    // set容器不允许容器中有重复元素
+    printSet(s1);
+    // 拷贝构造
+    set<int> s2(s1);
+    printSet(s2);
+    // 赋值
+    set<int> s3;
+    s3 = s2;
+    printSet(s3);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.8.3 set大小和交换
+
++ 函数原型
+    1. size(); // 返回容器中元素的数目
+    2. empty(); // 判断容器是否为空
+    3. swap(set1, set2); // 将set1和set2交换
+
+```C++
+#include <iostream>
+using namespace std;
+#include <set>
+
+void printSet(const set<int> &s)
+{
+    for (set<int>::const_iterator it = s.begin(); it != s.end(); it++)
+        cout << *it << " ";
+    cout << endl;
+}
+// set大小和交换
+// 大小
+void test01()
+{
+    set<int> s1;
+    // 插入数据只有insert方式
+    s1.insert(20);
+    s1.insert(10);
+    s1.insert(30);
+    printSet(s1);
+    if (s1.empty())
+        cout << "s1为空" << endl;
+    else
+    {
+        cout << "s1不为空" << endl;
+        cout << "s1的大小为: " << s1.size() << endl;
+    }
+}
+// 交换
+void test02()
+{
+    set<int> s1;
+    s1.insert(10);
+    s1.insert(20);
+    s1.insert(30);
+    s1.insert(40);
+    printSet(s1);
+    set<int> s2;
+    s2.insert(100);
+    s2.insert(200);
+    s2.insert(300);
+    cout << "交换前" << endl;
+    printSet(s2);
+    s1.swap(s2);
+    cout << "交换后" << endl;
+    printSet(s2);
+}
+int main()
+{
+    test01();
+    test02();
+    return 0;
+}
+```
+
+#### 3.8.4 set插入和删除
+
++ 函数原型
+    1. insert(elem) // 插入元素
+    2. clear(); // 清空容器
+    3. erase(pos); // 删除指定位置的元素, 返回下一个元素的迭代器
+    4. erase(beg, end); // 删除指定元素, 返回下一个元素的迭代器
+    5. erase(elem); // 删除容器中指为elem的元素
+
+```C++
+#include <iostream>
+using namespace std;
+#include <set>
+
+void printSet(const set<int> &s)
+{
+    for (set<int>::const_iterator it = s.begin(); it != s.end(); it++)
+        cout << *it << " ";
+    cout << endl;
+}
+// set插入和删除
+void test01()
+{
+    set<int> s1;
+    // 插入数据只有insert方式
+    s1.insert(20);
+    s1.insert(10);
+    s1.insert(30);
+    s1.insert(40);
+    printSet(s1);
+    // 删除数据只有erase方式
+    s1.erase(s1.begin());
+    printSet(s1);
+    s1.erase(20);
+    printSet(s1);
+    s1.erase(s1.begin(), s1.end()); // 相当于清空
+    printSet(s1);
+    s1.clear();
+    printSet(s1); // 清空
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.8.5 set查找和统计
+
++ 函数原型
+    1. find(key); // 查找key是否存在, 如果存在, 返回该元素的迭代器, 否则返回set.end()
+    2. count(key); // 查找key的个数
+
+```C++
+#include <iostream>
+using namespace std;
+#include <set>
+
+void printSet(const set<int> &s)
+{
+    for (set<int>::const_iterator it = s.begin(); it != s.end(); it++)
+        cout << *it << " ";
+    cout << endl;
+}
+// set查找和统计
+void test01()
+{
+    set<int> s1;
+    s1.insert(20);
+    s1.insert(10);
+    s1.insert(30);
+    s1.insert(30);
+    set<int>::iterator pos = s1.find(30);
+    if (pos != s1.end())
+        cout << "找到元素：" << *pos << endl;
+    else
+        cout << "未找到元素" << endl;
+    int num = s1.count(30);
+    cout << "30出现了" << num << "次" << endl;
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.8.6 set和multiset区别
+
++ 区别
+    1. set不允许容器中有重复元素, 而multiset允许容器中有重复元素
+    2. set插入数据的同时会返回插入结果, 表示插入是否成功
+    3. multiset不会检测数据, 因此可以插入重复数据
+
+```C++
+#include <iostream>
+using namespace std;
+#include <set>
+
+void printSet(const set<int> &s)
+{
+    for (set<int>::const_iterator it = s.begin(); it != s.end(); it++)
+        cout << *it << " ";
+    cout << endl;
+}
+// set和multiset区别
+void test01()
+{
+    set<int> s1;
+    pair<set<int>::iterator, bool> ret = s1.insert(10);
+    if (ret.second)
+        cout << "第一次插入成功" << endl;
+    else
+        cout << "第一次插入失败" << endl;
+    ret = s1.insert(10);
+    if (ret.second)
+        cout << "第二次插入成功" << endl;
+    else
+        cout << "第二次插入失败" << endl;
+    multiset<int> ms; // 允许插入重复元素
+    ms.insert(10);
+    ms.insert(10);
+    for (multiset<int>::iterator it = ms.begin(); it != ms.end(); it++)
+        cout << *it << " ";
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.8.7 pair队组创建
+
++ 功能描述
+    1. 成对出现的数据, 利用队组可以返回两个数据
+
++ 两种创建方式
+    1. pair《type, type》p(value1, value2);
+    2. pair《type, type》p = make_pair(value1, value2);
+
+```C++
+#include <iostream>
+using namespace std;
+#include <string>
+
+// pair队组创建
+void test01()
+{
+    // 第一种创建方式
+    pair<string, int> p("ming", 18);
+    cout << "name: " << p.first << ", age: " << p.second << endl;
+    // 第二种创建方式
+    pair<string, int> p2 = make_pair("xing", 19);
+    cout << "name: " << p2.first << ", age: " << p2.second << endl;
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.8.8 set容器排序
+
++ set容器默认排序规则为从小到大
++ 利用仿函数, 可以改变排序规则
+
+```C++
+#include <iostream>
+using namespace std;
+#include <set>
+
+void printSet(set<int> &s)
+{
+    for (set<int>::iterator it = s.begin(); it != s.end(); it++)
+        cout << *it << " ";
+    cout << endl;
+}
+// set容器排序
+class MyCompare
+{
+public:
+    bool operator()(int v1, int v2) const
+    {
+        return v1 > v2;
+    }
+};
+void test01()
+{
+    set<int> s1;
+    s1.insert(10);
+    s1.insert(30);
+    s1.insert(20);
+    s1.insert(40);
+    printSet(s1);
+    // 指定排序规则为从大到小
+    set<int, MyCompare> s2;
+    s2.insert(10);
+    s2.insert(20);
+    s2.insert(40);
+    s2.insert(30);
+    for (set<int, MyCompare>::iterator it = s2.begin(); it != s2.end(); it++)
+        cout << *it << " ";
+    cout << endl;
+    // 自带greater功能
+    set<int, greater<int>> s3;
+    s3.insert(10);
+    s3.insert(20);
+    s3.insert(40);
+    s3.insert(30);
+    for (set<int, greater<int>>::iterator it = s3.begin(); it != s3.end(); it++)
+        cout << *it << " ";
+    cout << endl;
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.8.9 set存放自定义数据类型的排序
+
++ 利用仿函数, 可以改变排序规则
+
+```C++
+#include <iostream>
+using namespace std;
+#include <string>
+#include <set>
+
+// set容器排序, 存放自定义数据类型
+class Person
+{
+public:
+    Person(string name, int age)
+    {
+        this->m_Name = name;
+        this->m_Age = age;
+    }
+    string m_Name;
+    int m_Age;
+};
+class MyCompare
+{
+public:
+    bool operator()(const Person &p1, const Person &p2) const
+    {
+        return p1.m_Age > p2.m_Age;
+    }
+};
+void printSet(const set<Person, MyCompare> &s)
+{
+    for (set<Person, MyCompare>::const_iterator it = s.begin(); it != s.end(); it++)
+        cout << "name: " << it->m_Name << ", age: " << it->m_Age << endl;
+    cout << endl;
+}
+void test01()
+{
+    set<Person, MyCompare> s;
+    Person p1("ming", 18);
+    Person p2("xing", 19);
+    Person p3("hong", 20);
+    Person p4("wang", 21);
+    s.insert(p1);
+    s.insert(p2);
+    s.insert(p3);
+    s.insert(p4);
+    printSet(s);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+### 3.9 map/multimap容器
+
+#### 3.9.1 map基本概念
