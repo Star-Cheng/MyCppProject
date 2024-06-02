@@ -1,9 +1,8 @@
 #include <iostream>
 using namespace std;
-#include <string>
-#include <set>
+#include <map>
 
-// set容器排序, 存放自定义数据类型
+// map自定义数据类型排序
 class Person
 {
 public:
@@ -23,24 +22,22 @@ public:
         return p1.m_Age > p2.m_Age;
     }
 };
-void printSet(const set<Person, MyCompare> &s)
+void printMap(const map<Person, int, MyCompare> &m)
 {
-    for (set<Person, MyCompare>::const_iterator it = s.begin(); it != s.end(); it++)
-        cout << "name: " << it->m_Name << ", age: " << it->m_Age << endl;
+    for (map<Person, int, MyCompare>::const_iterator it = m.begin(); it != m.end(); it++)
+        cout << "value = " << it->second << ", name = " << it->first.m_Name << ", age = " << it->first.m_Age << endl;
     cout << endl;
 }
 void test01()
 {
-    set<Person, MyCompare> s;
-    Person p1("ming", 18);
-    Person p2("xing", 19);
-    Person p3("hong", 20);
-    Person p4("wang", 21);
-    s.insert(p1);
-    s.insert(p2);
-    s.insert(p3);
-    s.insert(p4);
-    printSet(s);
+    map<Person, int, MyCompare> m1;
+    Person p1("ming", 19);
+    Person p2("xing", 18);
+    Person p3("wang", 20);
+    m1.insert(make_pair(p1, 1));
+    m1.insert(make_pair(p2, 2));
+    m1.insert(make_pair(p3, 3));
+    printMap(m1);
 }
 int main()
 {

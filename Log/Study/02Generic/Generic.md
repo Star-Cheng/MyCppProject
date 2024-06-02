@@ -3103,3 +3103,297 @@ int main()
 ### 3.9 map/multimap容器
 
 #### 3.9.1 map基本概念
+
++ 简介
+    1. map中所有元素都是pair
+    2. pair中第一个元素为key, 起到索引作用, 第二个元素为value
+    3. 所有元素都会根据元素的键值自动排序
++ 本质
+    1. map/mutimap属于关联式容器, 底层是用二叉树实现
++ 优点:
+    1. 可以根据key值快速查找value
++ map和multimap区别
+    1. map不允许容器中有重复key
+    2. multimap允许容器中有重复key
+
+#### 3.9.2 map构造和赋值
+
++ 函数原型
+    1. map<T1, T2> m; // 默认构造函数
+    2. map(const map &m); // 拷贝构造函数
+    3. map& operator=(const map &m); // 重载等号操作符
+
+```C++
+#include <iostream>
+using namespace std;
+#include <map>
+
+// map构造和赋值
+void printMap(const map<int, int> &m)
+{
+    for (map<int, int>::const_iterator it = m.begin(); it != m.end(); it++)
+    {
+        cout << "key = " << it->first << " value = " << it->second << endl;
+    }
+    cout << endl;
+}
+void test01()
+{
+    map<int, int> m1;
+    // m1[0] = 10;
+    // m1[2] = 20;
+    // m1[1] = 30;
+    m1.insert(make_pair(0, 10));
+    m1.insert(make_pair(3, 20));
+    m1.insert(make_pair(1, 30));
+    m1.insert(make_pair(2, 30));
+    printMap(m1);
+    // 拷贝构造
+    map<int, int> m2(m1);
+    printMap(m2);
+    // 赋值
+    map<int, int> m3;
+    m3 = m2;
+    printMap(m3);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.9.3 map大小和交换
+
++ 函数原型
+    1. size(); // 返回容器中元素的数目
+    2. empty(); // 判断容器是否为空
+    3. swap(m); // 将m与本身的元素互换
+
+```C++
+#include <iostream>
+using namespace std;
+#include <map>
+
+// map大小和交换
+void printMap(const map<int, int> &m)
+{
+    for (map<int, int>::const_iterator it = m.begin(); it != m.end(); it++)
+    {
+        cout << "key = " << it->first << " value = " << it->second << endl;
+    }
+    cout << endl;
+}
+void test01()
+{
+    map<int, int> m1;
+    m1[0] = 10;
+    m1[1] = 20;
+    m1[2] = 30;
+    printMap(m1);
+    if (m1.empty())
+        cout << "m1为空" << endl;
+    else
+        cout << "m1不为空" << endl;
+    cout << "m1的大小为: " << m1.size() << endl;
+    map<int, int> m2;
+    m2[0] = -1;
+    m2[1] = -1;
+    m2[2] = -1;
+    cout << "交换前" << endl;
+    printMap(m1);
+    m2.swap(m1);
+    cout << "交换后" << endl;
+    printMap(m1);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.9.4 map插入和删除
+
++ 函数原型
+    1. insert(elem); // 向map容器中添加元素
+    2. clear(); // 清空map容器
+    3. erase(pos); // 删除pos迭代器所指的元素，返回下一个元素的迭代器
+    4. erase(beg, end); // 删除区间[beg, end)的所有元素
+    5. erase(key); // 删除key键对应的元素
+
+```C++
+#include <iostream>
+using namespace std;
+#include <map>
+
+// map插入和删除
+void printMap(const map<int, int> &m)
+{
+    for (map<int, int>::const_iterator it = m.begin(); it != m.end(); it++)
+        cout << "key = " << it->first << " value = " << it->second << endl;
+    cout << endl;
+}
+void test01()
+{
+    map<int, int> m1;
+    // 插入
+    m1.insert(pair<int, int>(1, 10));
+    m1.insert(make_pair(2, 20));
+    m1.insert(map<int, int>::value_type(3, 30));
+    m1[4] = 40; // 不建议插入, 用途: 可以利用key访问到value
+    printMap(m1);
+    // 删除
+    m1.erase(m1.begin());
+    printMap(m1);
+    m1.erase(2); // 删除key为2的元素
+    printMap(m1);
+    m1.erase(m1.begin(), m1.end()); // 相当于清空
+    printMap(m1);
+    m1.clear(); // 清空
+    printMap(m1);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.9.5 map查找和统计
+
++ 函数原型
+    1. find(key);  // 查找key是否存在, 如果存在, 返回该键的元素的迭代器, 否则返回map.end()
+    2. count(key); // 查找key的个数, 如果key存在, 返回1, 否则返回0
+
+```C++
+#include <iostream>
+using namespace std;
+#include <map>
+
+// map查找和统计
+void printMap(const map<int, int> &m)
+{
+    for (map<int, int>::const_iterator it = m.begin(); it != m.end(); it++)
+        cout << "key = " << it->first << " value = " << it->second << endl;
+    cout << endl;
+}
+void test01()
+{
+    map<int, int> m1;
+    // 查找
+    m1.insert(make_pair(1, 10));
+    m1.insert(make_pair(2, 10));
+    m1.insert(make_pair(3, 10));
+    map<int, int>::iterator pos = m1.find(2);
+    if (pos != m1.end())
+        cout << "key = " << pos->first << " value = " << pos->second << endl;
+    else
+        cout << "没有找到" << endl;
+    // 统计
+    int num = m1.count(2);
+    cout << "num = " << num << endl;
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.9.6 map容器排序
+
++ 函数原型
+    1. sort(beg, end, cmp); // 将[beg, end)区间内的元素进行排序，使用cmp作为排序规则
+    2. sort(beg, end); // 将[beg, end)区间内的元素进行排序，使用仿函数
+    3. cmp(a, b); // 返回true, 则a排前面, 否则b排前面
+    4. cmp(a, b) { return a > b; } // 降序
+    5. cmp(a, b) { return a < b; } // 升序
+
+```C++
+#include <iostream>
+using namespace std;
+#include <map>
+
+// map容器排序
+class MyCompare
+{
+public:
+    bool operator()(int v1, int v2) const
+    {
+        return v1 > v2;
+    }
+};
+void printMap(const map<int, int, MyCompare> &m)
+{
+    for (map<int, int, MyCompare>::const_iterator it = m.begin(); it != m.end(); it++)
+        cout << "key = " << it->first << " value = " << it->second << endl;
+    cout << endl;
+}
+void test01()
+{
+    map<int, int, MyCompare> m1;
+    m1.insert(make_pair(1, 10));
+    m1.insert(make_pair(3, 30));
+    m1.insert(make_pair(2, 20));
+    printMap(m1);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 3.9.7 map自定义数据类型排序
+
++ map只能根据key进行排序，如果key相同，则根据value进行排序
+
+```C++
+#include <iostream>
+using namespace std;
+#include <map>
+
+// map自定义数据类型排序
+class Person
+{
+public:
+    Person(string name, int age)
+    {
+        this->m_Name = name;
+        this->m_Age = age;
+    }
+    string m_Name;
+    int m_Age;
+};
+class MyCompare
+{
+public:
+    bool operator()(const Person &p1, const Person &p2) const
+    {
+        return p1.m_Age > p2.m_Age;
+    }
+};
+void printMap(const map<Person, int, MyCompare> &m)
+{
+    for (map<Person, int, MyCompare>::const_iterator it = m.begin(); it != m.end(); it++)
+        cout << "value = " << it->second << ", name = " << it->first.m_Name << ", age = " << it->first.m_Age << endl;
+    cout << endl;
+}
+void test01()
+{
+    map<Person, int, MyCompare> m1;
+    Person p1("ming", 19);
+    Person p2("xing", 18);
+    Person p3("wang", 20);
+    m1.insert(make_pair(p1, 1));
+    m1.insert(make_pair(p2, 2));
+    m1.insert(make_pair(p3, 3));
+    printMap(m1);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
