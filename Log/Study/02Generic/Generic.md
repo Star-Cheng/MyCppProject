@@ -1151,6 +1151,8 @@ int main()
 }
 ```
 
+## 3. STL容器
+
 ### 3.1 string容器
 
 #### 3.1.1 string基本概念
@@ -3397,3 +3399,511 @@ int main()
     return 0;
 }
 ```
+
+### 3.10 案例-员工分组
+
+```C++
+#include <iostream>
+using namespace std;
+#include <string>
+#include <vector>
+#include <map>
+#include <ctime>
+#define CEHUA 0
+#define MEISHU 1
+#define YANFA 2
+class Worker
+{
+public:
+    string m_Name;
+    int m_Salary;
+};
+
+void createWorker(vector<Worker> &v)
+{
+    string nameSeed = "ABCDEFGHIJ";
+    for (int i = 0; i < 10; i++)
+    {
+        Worker w;
+        w.m_Name = "员工";
+        w.m_Name += nameSeed[i];
+        w.m_Salary = rand() % 10000 + 10000;
+        v.push_back(w);
+    }
+}
+void setGruop(vector<Worker> &v, multimap<int, Worker> &m)
+{
+    for (vector<Worker>::iterator it = v.begin(); it != v.end(); it++)
+    {
+        int deptId = rand() % 3;
+        m.insert(make_pair(deptId, *it));
+    }
+}
+void showWorkerByGroup(multimap<int, Worker> &m)
+{
+    cout << "-------------------------------------------------" << endl;
+    multimap<int, Worker>::iterator pos = m.find(CEHUA);
+    map<int, string> mDept = {
+        {CEHUA, "策划"},
+        {MEISHU, "美术"},
+        {YANFA, "研发"}};
+    for (int i = 0; i < 3; i++)
+    {
+        int count = m.count(i);
+        int index = 0;
+        cout << "部门编号：" << mDept[i] << endl;
+        for (; pos != m.end() && index < count; pos++, index++)
+        {
+            cout << "name: " << pos->second.m_Name << " salary: " << pos->second.m_Salary << endl;
+        }
+    }
+}
+int main()
+{
+    srand((unsigned int)time(NULL));
+    // 1. 创建员工
+    vector<Worker> vWorker;
+    createWorker(vWorker);
+    for (vector<Worker>::iterator it = vWorker.begin(); it != vWorker.end(); it++)
+        cout << "name: " << it->m_Name << " salary: " << it->m_Salary << endl;
+    // 2. 员工分组
+    multimap<int, Worker> mWorker;
+    setGruop(vWorker, mWorker);
+    // 3. 分组显示员工
+    showWorkerByGroup(mWorker);
+    return 0;
+}
+```
+
+## 4. STL函数对象
+
+### 4.1 函数对象
+
+#### 4.1.1 函数对象概念
+
++ 概念
+    1. 重载函数调用操作符的类, 其对象常称为函数对象
+    2. 函数对象使用重载的()时, 行为类似d函数调用, 也叫反函数
++ 本质
+    1. 函数对象(仿函数)式一个类, 不是一个函数
+
+#### 4.1.2 函数对象使用
+
++ 特点
+    1. 函数对象在使用时, 可以像普通函数那样调用, 可以有参数, 也可以有返回值
+    2. 函数对象超出普通函数的概念, 函数对象可以有自己的状态
+    3. 函数对象可以作为参数传递
+
+```C++
+#include <iostream>
+using namespace std;
+
+// 函数对象使用
+class MyAdd
+{
+public:
+    int operator()(int a, int b)
+    {
+        return a + b;
+    }
+};
+// 1. 函数对象在使用时, 可以像普通函数那样调用, 可以有参数, 也可以有返回值
+void test01()
+{
+    MyAdd myadd;
+    cout << myadd(10, 20) << endl;
+}
+// 2. 函数对象超出普通函数的概念, 函数对象可以有自己的状态
+class Myprint
+{
+public:
+    Myprint()
+    {
+        this->count = 0;
+    }
+    void operator()(string test)
+    {
+        cout << test << endl;
+        this->count++;
+    }
+    int count = 0;
+};
+void test02()
+{
+    Myprint myprint;
+    myprint("hello world");
+    myprint("hello world");
+    myprint("hello world");
+    cout << "myprint调用的次数为: " << myprint.count << endl;
+}
+// 3. 函数对象可以作为参数传递
+void doPrint(Myprint &myprint, string test)
+{
+    myprint(test);
+}
+void test03()
+{
+    Myprint myprint;
+    doPrint(myprint, "hello world");
+}
+int main()
+{
+    test01();
+    test02();
+    test03();
+    return 0;
+}
+```
+
+### 4.2 谓词
+
+#### 4.2.1 谓词概念
+
++ 概念
+    1. 返回bool类型的仿函数称为谓词
+    2. 如果operator()接收一个参数, 则称为一元谓词
+    3. 如果operator()接收两个参数, 则称为二元谓词
+
+#### 4.2.2 一元谓词
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+
+// 返回bool类型的仿函数称为谓词
+// 一元谓词
+class GreaterFive
+{
+public:
+    bool operator()(int val)
+    {
+        return val > 5;
+    }
+};
+void test01()
+{
+    vector<int> v;
+    for (int i = 0; i < 10; i++)
+    {
+        v.push_back(i);
+    }
+    // 查找容器中有没有大于5的数字
+    find_if(v.begin(), v.end(), GreaterFive());
+    vector<int>::iterator it = find_if(v.begin(), v.end(), GreaterFive());
+    if (it == v.end())
+        cout << "未到了" << endl;
+    else
+        cout << "没找到了大于5的数: " << *it << endl;
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 4.2.2 二元谓词
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+
+// 返回bool类型的仿函数称为谓词
+// 二元谓词
+class MyCompare
+{
+public:
+    bool operator()(int v1, int v2)
+    {
+        return v1 > v2;
+    }
+};
+void printVector(const vector<int> &v)
+{
+    for (vector<int>::const_iterator it = v.begin(); it != v.end(); it++)
+        cout << *it << " ";
+    cout << endl;
+}
+void test01()
+{
+    vector<int> v;
+    v.push_back(10);
+    v.push_back(40);
+    v.push_back(20);
+    v.push_back(30);
+    v.push_back(50);
+    printVector(v);
+    // 使用函数对象改变算法策略, 变为排序规则为从大到小
+    // sort(v.begin(), v.end(), greater<int>());
+    sort(v.begin(), v.end(), MyCompare());
+    printVector(v);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+### 4.3 内建函数对象
+
+#### 4.3.1 内建函数对象意义
+
++ 概念
+    1. STL内建类一些函数对象
++ 分类
+    1. 算术仿函数
+    2. 关系仿函数
+    3. 逻辑仿函数
++ 用法
+    1. 这些仿函数所产生的对象, 用法和一般函数完全相同
+    2. 使用内建函数对象, 需要引入头文件#include 《functional》
+
+##### 4.3.2 算术仿函数
+
++ 功能描述
+    1. 实现四则运算
+    2. 其中negate是一元运算, 其他都是二元运算
++ 仿函数原型
+    1. template《class T》 T plus《T》 // 加法仿函数
+    2. template《class T》 T minus《T》 // 减法仿函数
+    3. template《class T》 T multiplies《T》 // 乘法仿函数
+    4. template《class T》 T divides《T》 // 除法仿函数
+    5. template《class T》 T modulus《T》 // 取模仿函数
+    6. template《class T》 T negate《T》 // 取反仿函数
+
+```C++
+#include <iostream>
+using namespace std;
+#include <functional>
+
+// 内建函数对象
+// negate一元仿函数 取反仿函数
+
+void test01()
+{
+    negate<int> n;
+    cout << n(10) << endl;
+}
+// plus f二元仿函数 加法
+void test02()
+{
+    plus<int> p;
+    minus<int> m;
+    multiplies<int> multi;
+    divides<int> d;
+    cout << p(10, 20) << endl;
+    cout << m(10, 20) << endl;
+    cout << multi(10, 20) << endl;
+    cout << d(20, 10) << endl;
+}
+int main()
+{
+    test01();
+    test02();
+    return 0;
+}
+```
+
+#### 4.3.3 关系仿函数
+
++ 功能
+    1. 实现关系对比
++ 仿函数原型
+    1. template《class T》 bool equal_to《T》 // 等于
+    2. template《class T》 bool not_equal《T》 // 不等于
+    3. template《class T》 bool greater《T》 // 大于
+    4. template《class T》 bool greater_equal《T》 // 大于等于
+    5. template《class T》 bool less《T》 // 小于
+    6. template《class T》 bool less_equal《T》 // 小于等于
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+#include <functional>
+
+// 关系仿函数
+// 大于 greater
+void printVector(const vector<int> &v)
+{
+    for (vector<int>::const_iterator it = v.begin(); it != v.end(); it++)
+        cout << *it << " ";
+    cout << endl;
+}
+void test01()
+{
+    vector<int> v;
+    v.push_back(10);
+    v.push_back(30);
+    v.push_back(40);
+    v.push_back(20);
+    v.push_back(50);
+    sort(v.begin(), v.end(), greater<int>());
+    printVector(v);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 4.3.4 逻辑仿函数
+
++ 功能
+    1. 实现逻辑运算
++ 函数原型
+    1. template《class T》 bool logical_and《T》 // 逻辑与
+    2. template《class T》 bool logical_or《T》 // 逻辑或
+    3. template《class T》 bool logical_not《T》 // 逻辑非
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+#include <functional>
+
+// 逻辑仿函数
+// 逻辑非 logic_not
+void printVector(vector<bool> &v)
+{
+    for (vector<bool>::iterator it = v.begin(); it != v.end(); it++)
+    {
+        cout << *it << " ";
+    }
+    cout << endl;
+}
+void test01()
+{
+    vector<bool> v;
+    v.push_back(true);
+    v.push_back(false);
+    v.push_back(true);
+    v.push_back(false);
+    printVector(v);
+    // 利用逻辑非将容器中的值取反
+    vector<bool> v2;
+    v2.resize(v.size());
+    transform(v.begin(), v.end(), v2.begin(), logical_not<bool>());
+    printVector(v2);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+## 5. STL常用算法
+
+### 5.1 常用遍历算法
+
++ for_each // 遍历容器元素
++ transform // 搬运容器元素
+
+#### 5.1.1 for_each
+
++ for_each(iterator beg, iterator end,_Func )
+    1. 遍历容器元素
+    2. beg 开始迭代器
+    3. end 结束迭代器
+    4. _Func 函数或者函数对象
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+
+// 常用遍历算法for_each
+// 普通函数
+void print01(int val)
+{
+    cout << val << " ";
+}
+// 仿函数
+class print02
+{
+public:
+    void operator()(int val)
+    {
+        cout << val << " ";
+    }
+};
+void test01()
+{
+    vector<int> v;
+    for (int i = 0; i < 10; i++)
+        v.push_back(i);
+    for_each(v.begin(), v.end(), print01);
+    cout << endl;
+    for_each(v.begin(), v.end(), print02());
+    cout << endl;
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 5.1.2 transform
+
++ 功能描述
+    1. 搬运容器到另一个容器中
++ transform(iterator beg1, iterator end1, iterator beg2, _Func)
+    1. beg1 源容器开始迭代器
+    2. end1 源容器结束迭代器
+    3. beg2 目标容器开始迭代器
+    4. _Func 函数或者函数对象
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+
+// 常用遍历算法transform
+class myprint
+{
+public:
+    void operator()(int val)
+    {
+        cout << val << " ";
+    }
+};
+class mytransform
+{
+public:
+    int operator()(int val)
+    {
+        return val + 100;
+    }
+};
+void test01()
+{
+    vector<int> v;
+    for (int i = 0; i < 10; i++)
+        v.push_back(i);
+    vector<int> v2(v.size());
+    for_each(v.begin(), v.end(), myprint());
+    cout << endl;
+    transform(v.begin(), v.end(), v2.begin(), mytransform());
+    for_each(v2.begin(), v2.end(), myprint());
+    cout << endl;
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+### 5.2 常用查找算法

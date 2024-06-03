@@ -1,43 +1,32 @@
 #include <iostream>
 using namespace std;
-#include <map>
+#include <vector>
+#include <algorithm>
 
-// map自定义数据类型排序
-class Person
+// 常用遍历算法for_each
+// 普通函数
+void print01(int val)
 {
-public:
-    Person(string name, int age)
-    {
-        this->m_Name = name;
-        this->m_Age = age;
-    }
-    string m_Name;
-    int m_Age;
-};
-class MyCompare
-{
-public:
-    bool operator()(const Person &p1, const Person &p2) const
-    {
-        return p1.m_Age > p2.m_Age;
-    }
-};
-void printMap(const map<Person, int, MyCompare> &m)
-{
-    for (map<Person, int, MyCompare>::const_iterator it = m.begin(); it != m.end(); it++)
-        cout << "value = " << it->second << ", name = " << it->first.m_Name << ", age = " << it->first.m_Age << endl;
-    cout << endl;
+    cout << val << " ";
 }
+// 仿函数
+class print02
+{
+public:
+    void operator()(int val)
+    {
+        cout << val << " ";
+    }
+};
 void test01()
 {
-    map<Person, int, MyCompare> m1;
-    Person p1("ming", 19);
-    Person p2("xing", 18);
-    Person p3("wang", 20);
-    m1.insert(make_pair(p1, 1));
-    m1.insert(make_pair(p2, 2));
-    m1.insert(make_pair(p3, 3));
-    printMap(m1);
+    vector<int> v;
+    for (int i = 0; i < 10; i++)
+        v.push_back(i);
+    for_each(v.begin(), v.end(), print01);
+    cout << endl;
+    for_each(v.begin(), v.end(), print02());
+    cout << endl;
 }
 int main()
 {
