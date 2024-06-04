@@ -3907,3 +3907,590 @@ int main()
 ```
 
 ### 5.2 常用查找算法
+
++ 算法简介
+    1. find // 查找元素
+    2. find_if // 查找满足条件的元素
+    3. adjacent_find // 查找相邻重复元素
+    4. binary_search // 查找元素，使用二分查找法
+    5. count // 统计元素个数
+    6. count_if // 统计满足条件的元素个数
+
+#### 5.2.1 find
+
++ 功能描述
+    1. 查找容器中指定元素, 找到返回该元素的迭代器，找不到返回结束迭代器
++ find(iterator beg, iterator end, value);
+    1. 按值查找元素, 找到返回该元素的迭代器，找不到返回结束迭代器
+    2. beg 开始迭代器
+    3. end 结束迭代器
+    4. value 查找的元素值
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+
+// 常用查找算法find
+// 查找内置数据类型
+void test01()
+{
+    vector<int> v;
+    for (int i = 0; i < 10; i++)
+        v.push_back(i);
+    // 查找容器中是否有5这个元素
+    vector<int>::iterator it = find(v.begin(), v.end(), 5);
+    if (it == v.end())
+        cout << "没有找到" << endl;
+    else
+        cout << "找到5,位置是:" << it - v.begin() << endl;
+}
+// 查找自定义数据类型
+class Person
+{
+public:
+    string m_Name;
+    int m_Age;
+    Person(string name, int age)
+    {
+        this->m_Name = name;
+        this->m_Age = age;
+    }
+    // 重载==, 让底层find可以比较自定义数据类型
+    bool operator==(const Person &p)
+    {
+        if (this->m_Name == p.m_Name && this->m_Age == p.m_Age)
+            return true;
+        else
+            return false;
+    }
+};
+void test02()
+{
+    vector<Person> v;
+    Person p1("ming", 19);
+    Person p2("xing", 18);
+    Person p3("wang", 20);
+    v.push_back(p1);
+    v.push_back(p2);
+    v.push_back(p3);
+    // 查找容器中是否有唐僧这个元素
+    vector<Person>::iterator it = find(v.begin(), v.end(), p2);
+    if (it == v.end())
+        cout << "没有找到" << endl;
+    else
+        cout << "找到唐僧,位置是:" << it - v.begin() << endl;
+}
+int main()
+{
+    test01();
+    test02();
+    return 0;
+}
+```
+
+#### 5.2.2 find_if
+
++ 功能描述
+    1. 按条件查找元素, 找到返回该元素的迭代器，找不到返回结束迭代器
++ find_if(iterator beg, iterator end,_Pred);
+    1. 按值查找元素, 找到返回该元素的迭代器，找不到返回结束迭代器
+    2. beg 开始迭代器
+    3. end 结束迭代器
+    4. _Pred 函数或者函数对象
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+
+// 常用查找算法find_if
+// 查找内置数据类型
+class GreaterFive
+{
+public:
+    bool operator()(int v)
+    {
+        return v > 5;
+    }
+};
+void test01()
+{
+    vector<int> v;
+    for (int i = 0; i < 10; i++)
+        v.push_back(i);
+    // 查找容器中是否有5这个元素
+    vector<int>::iterator it = find_if(v.begin(), v.end(), GreaterFive());
+    if (it == v.end())
+        cout << "没有找到" << endl;
+    else
+        cout << "找到5,位置是:" << it - v.begin() << endl;
+}
+// 查找自定义数据类型
+class Person
+{
+public:
+    Person(string name, int age)
+    {
+        this->m_Name = name;
+        this->m_Age = age;
+    }
+    string m_Name;
+    int m_Age;
+    bool operator==(const Person &p)
+    {
+        if (this->m_Name == p.m_Name && this->m_Age == p.m_Age)
+            return true;
+        else
+            return false;
+    }
+};
+class GreaterPerson
+{
+public:
+    bool operator()(const Person &p)
+    {
+        return p.m_Age > 19;
+    }
+};
+void test02()
+{
+    vector<Person> v;
+    Person p1("ming", 19);
+    Person p2("xing", 18);
+    Person p3("wang", 20);
+    v.push_back(p1);
+    v.push_back(p2);
+    v.push_back(p3);
+    vector<Person>::iterator it = find_if(v.begin(), v.end(), GreaterPerson());
+    if (it == v.end())
+        cout << "没有找到" << endl;
+    else
+        cout << "找到了位置是:" << it - v.begin() << " "
+             << "姓名: " << it->m_Name << " "
+             << "年龄: " << it->m_Age << endl;
+}
+int main()
+{
+    test01();
+    test02();
+    return 0;
+}
+```
+
+#### 5.2.3 adjacent_find
+
++ 功能描述
+    1. 查找相邻重复元素, 找到返回该元素的迭代器，找不到返回结束迭代器
++ adjacent_find(iterator beg, iterator end);
+    1. 查找相邻重复元素, 返回相邻元素的第一个位置的迭代器
+    2. beg 开始迭代器
+    3. end 结束迭代器
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+
+// 常用查找算法adjacent_find
+void test01()
+{
+    vector<int> v;
+    v.push_back(10);
+    v.push_back(20);
+    v.push_back(10);
+    v.push_back(10);
+    v.push_back(30);
+    v.push_back(10);
+    v.push_back(40);
+    vector<int>::iterator pos = adjacent_find(v.begin(), v.end());
+    if (pos == v.end())
+    {
+        cout << "没有找到" << endl;
+    }
+    else
+    {
+        cout << "找到相邻重复的元素：" << *pos << endl;
+    }
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 5.2.4 binary_search
+
++ 功能描述
+    1. 查找指定元素是否存在
++ binary_search(iterator beg, iterator end, value);
+    1. 查找指定的元素, 查到返回true, 找不到返回false
+    2. 注意: 在无序序列中不可用
+    3. beg 开始迭代器
+    4. end 结束迭代器
+    5. value 查找的元素值
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+
+// 常用查找算法binary_search
+void test01()
+{
+    vector<int> v;
+    for (int i = 0; i < 10; i++)
+        v.push_back(i);
+    sort(v.begin(), v.end()); // 注意: 排序之后才能使用二分查找
+    bool ret = binary_search(v.begin(), v.end(), 10);
+    if (ret)
+    {
+        cout << "找到了" << endl;
+    }
+    else
+    {
+        cout << "没找到" << endl;
+    }
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 5.2.5 count
+
++ 功能描述
+    1. 统计元素个数
++ count(iterator beg, iterator end, value);
+    1. 统计指定元素个数
+    2. beg 开始迭代器
+    3. end 结束迭代器
+    4. value 查找的元素值
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <string>
+#include <algorithm>
+
+// 常用查找算法count
+// 1. 统计内置数据类型
+void test01()
+{
+    vector<int> v;
+    for (int i = 0; i < 10; i++)
+        v.push_back(i);
+    int num = count(v.begin(), v.end(), 5);
+    cout << "num = " << num << endl;
+}
+// 2. 统计自定义数据类型
+class Person
+{
+public:
+    Person(string name, int age)
+    {
+        this->m_Name = name;
+        this->m_Age = age;
+    }
+    bool operator==(const Person &p)
+    {
+        if (this->m_Name == p.m_Name && this->m_Age == p.m_Age)
+            return true;
+        else
+            return false;
+    }
+    string m_Name;
+    int m_Age;
+};
+void test02()
+{
+    vector<Person> v;
+    Person p1("ming", 19);
+    Person p2("xing", 28);
+    Person p3("wang", 20);
+    Person p4("wang", 20);
+    v.push_back(p1);
+    v.push_back(p2);
+    v.push_back(p3);
+    v.push_back(p4);
+    int num = count(v.begin(), v.end(), p3);
+    cout << "num = " << num << endl;
+}
+int main()
+{
+    test01();
+    test02();
+    return 0;
+}
+```
+
+#### 5.2.6 count_if
+
++ 功能描述
+    1. 按条件统计元素个数
++ count_if(iterator beg, iterator end,_Pred);
+    1. 按条件统计元素个数
+    2. beg 开始迭代器
+    3. end 结束迭代器
+    4. _Pred 函数或者函数对象
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <string>
+#include <algorithm>
+
+// 常用查找算法count_if
+// 1. 统计内置数据类型
+class GreaterFive
+{
+public:
+    bool operator()(int val)
+    {
+        return val > 5;
+    }
+};
+void test01()
+{
+    vector<int> v;
+    for (int i = 0; i < 10; i++)
+        v.push_back(i);
+    int num = count_if(v.begin(), v.end(), GreaterFive());
+    cout << "num = " << num << endl;
+}
+// 2. 统计自定义数据类型
+class Person
+{
+public:
+    Person(string name, int age)
+    {
+        this->m_Name = name;
+        this->m_Age = age;
+    }
+    string m_Name;
+    int m_Age;
+};
+class GreaterPerson
+{
+public:
+    bool operator()(const Person &p1)
+    {
+        return p1.m_Age > 18;
+    }
+};
+void test02()
+{
+    vector<Person> v;
+    Person p1("ming", 19);
+    Person p2("xing", 18);
+    Person p3("wang", 20);
+    Person p4("wang", 20);
+    v.push_back(p1);
+    v.push_back(p2);
+    v.push_back(p3);
+    v.push_back(p4);
+    int num = count_if(v.begin(), v.end(), GreaterPerson());
+    cout << "num = " << num << endl;
+}
+int main()
+{
+    test01();
+    test02();
+    return 0;
+}
+```
+
+### 5.3 常用排序算法
+
++ 算法简介
+    1. sort // 对容器内元素进行排序
+    2. random_shuffle // 随机打乱容器内元素
+    3. merge // 合并两个有序容器
+    4. reverse // 翻转容器内元素
+
+#### 5.3.1 sort
+
++ 功能描述
+    1. 对容器内元素进行排序
++ sort(iterator beg, iterator end, _Pred);
+    1. 按值查找元素, 找到返回该元素的迭代器，找不到返回结束迭代器
+    2. beg 开始迭代器
+    3. end 结束迭代器
+    4. _Pred 谓词
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+
+// 常用排序算法sort
+void printVector(vector<int> &v)
+{
+    for (vector<int>::iterator it = v.begin(); it != v.end(); it++)
+        cout << *it << " ";
+    cout << endl;
+}
+void test01()
+{
+    vector<int> v;
+    for (int i = 0; i < 5; i++)
+    {
+        v.push_back(i - 2);
+        v.push_back(i + 2);
+    }
+    printVector(v);
+    sort(v.begin(), v.end()); // 默认升序
+    printVector(v);
+    sort(v.begin(), v.end(), greater<int>()); // 降序
+    printVector(v);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 5.3.2 random_shuffle
+
++ 功能描述
+    1. 随机打乱容器内元素
++ random_shuffle(iterator beg, iterator end);
+    1. 指定范围内的元素随机调整次序
+    2. beg 开始迭代器
+    3. end 结束迭代器
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+#include <ctime>
+
+// 常用排序算法random_shuffle
+void printVector(vector<int> &v)
+{
+    for (vector<int>::iterator it = v.begin(); it != v.end(); it++)
+        cout << *it << " ";
+    cout << endl;
+}
+void test01()
+{
+    srand(time(NULL));
+    vector<int> v;
+    for (int i = 0; i < 10; i++)
+        v.push_back(i);
+    printVector(v);
+    // 打乱顺序
+    random_shuffle(v.begin(), v.end());
+    printVector(v);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 5.3.3 merge
+
++ 功能描述
+    1. 合并两个有序容器
++ merge(iterator beg1, iterator end1, iterator beg2, iterator end2, iterator dest);
+    1. 将两个有序容器合并到第三个容器
+    2. beg1 开始迭代器
+    3. end1 结束迭代器
+    4. beg2 开始迭代器
+    5. end2 结束迭代器
+    6. dest 目标容器
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+
+// 常用排序算法merge
+void printVector(vector<int> &v)
+{
+    for (vector<int>::iterator it = v.begin(); it != v.end(); it++)
+        cout << *it << " ";
+    cout << endl;
+}
+void test01()
+{
+    srand(time(NULL));
+    vector<int> v1;
+    vector<int> v2;
+    for (int i = 0; i < 5; i++)
+    {
+        v1.push_back(i);
+        v2.push_back(i + 2);
+    }
+    printVector(v1);
+    printVector(v2);
+    // 目标容器需要提前开辟空间
+    vector<int> v3(v1.size() + v2.size());
+    // 合并需要两个有序序列
+    merge(v1.begin(), v1.end(), v2.begin(), v2.end(), v3.begin());
+    printVector(v3);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 5.3.4 reverse
+
++ 功能描述
+    1. 翻转容器内元素
++ reverse(iterator beg, iterator end);
+    1. 指定范围内的元素反转
+    2. beg 开始迭代器
+    3. end 结束迭代器
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+
+// 常用排序算法reverse
+void printVector(vector<int> &v)
+{
+    for (vector<int>::iterator it = v.begin(); it != v.end(); it++)
+        cout << *it << " ";
+    cout << endl;
+}
+void test01()
+{
+    srand(time(NULL));
+    vector<int> v1;
+    for (int i = 0; i < 10; i++)
+        v1.push_back(i);
+    cout << "反转前: " << endl;
+    printVector(v1);
+    cout << "反转后: " << endl;
+    reverse(v1.begin(), v1.end());
+    printVector(v1);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+### 5.4 常用拷贝和替换算法
