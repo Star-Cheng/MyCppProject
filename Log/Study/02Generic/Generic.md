@@ -4494,3 +4494,428 @@ int main()
 ```
 
 ### 5.4 常用拷贝和替换算法
+
++ 算法简介
+    1. copy // 容器内指定的元素拷贝到另一容器中
+    2. replace // 将容器内指定范围的旧元素修改为新元素
+    3. replace_if // 容器内指定范围满足条件的元素替换为新元素
+    4. swap // 互换两个容器的元素
+
+#### 5.4.1 copy
+
++ 功能描述
+    1. 容器内指定范围的元素拷贝到另一容器中
++ copy(iterator beg1, iterator end1, iterator beg2);
+    1. 按指查找元素, 找到返回该元素的迭代器，找不到返回结束迭代器
+    2. beg1 开始迭代器
+    3. end1 结束迭代器
+    4. dest目标起始迭代器
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+
+// 常用拷贝和替换copy
+void printVector(vector<int> &v)
+{
+    for (vector<int>::iterator it = v.begin(); it != v.end(); it++)
+        cout << *it << " ";
+    cout << endl;
+}
+void test01()
+{
+    vector<int> v1;
+    for (int i = 0; i < 10; i++)
+        v1.push_back(i);
+    printVector(v1);
+    vector<int> v2(v1.size());
+    copy(v1.begin(), v1.end(), v2.begin());
+    printVector(v2);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 5.4.2 replace
+
++ 功能描述
+    1. 将容器内指定范围的旧元素修改为新元素
++ replace(iterator beg, iterator end, oldvalue, newvalue);
+    1. 将区间内旧元素替换成新元素
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+
+// 常用拷贝和替换replace
+void printVector(vector<int> &v)
+{
+    for (vector<int>::iterator it = v.begin(); it != v.end(); it++)
+        cout << *it << " ";
+    cout << endl;
+}
+void test01()
+{
+    vector<int> v1;
+    for (int i = 0; i < 10; i++)
+        v1.push_back(i);
+    cout << "替换前: " << endl;
+    printVector(v1);
+    cout << "替换后: " << endl;
+    replace(v1.begin(), v1.end(), 9, 100);
+    printVector(v1);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 5.4.3 replace_if
+
++ 功能描述
+    1. 将区间内满足条件的元素替换成新元素
++ replace_if(iterator beg, iterator end,_Pred, newvalue);
+    1. 将区间内满足条件的元素替换成新元素
+    2. beg 开始迭代器
+    3. end 结束迭代器
+    4. _Pred 谓词，条件判断
+    5. newvalue 新元素
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+
+// 常用拷贝和替换replace_if
+void printVector(vector<int> &v)
+{
+    for (vector<int>::iterator it = v.begin(); it != v.end(); it++)
+        cout << *it << " ";
+    cout << endl;
+}
+bool MyCompare(int &v1)
+{
+    return v1 > 5;
+}
+class pred_compare
+{
+public:
+    bool operator()(int &v1)
+    {
+        return v1 > 5;
+    }
+};
+void test01()
+{
+    vector<int> v1;
+    for (int i = 0; i < 10; i++)
+        v1.push_back(i);
+    cout << "替换前: " << endl;
+    printVector(v1);
+    cout << "替换后: " << endl;
+    // replace_if(v1.begin(), v1.end(), pred_compare(), 100);
+    replace_if(v1.begin(), v1.end(), MyCompare, 100);
+    printVector(v1);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 5.4.4 swap
+
++ 功能描述
+    1. 互换两个容器的元素
++ swap(container c1, container c2);
+    1. 互换两个容器的元素
+    2. c1 容器1
+    3. c2 容器2
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+
+// 常用拷贝和替换swap
+void printVector(vector<int> &v)
+{
+    for (vector<int>::iterator it = v.begin(); it != v.end(); it++)
+        cout << *it << " ";
+    cout << endl;
+}
+void test01()
+{
+    vector<int> v1;
+    vector<int> v2;
+    for (int i = 0; i < 10; i++)
+    {
+        v1.push_back(i + 10);
+        v2.push_back(i + 20);
+    }
+    cout << "交换前: " << endl;
+    printVector(v1);
+    swap(v1, v2);
+    cout << "交换后: " << endl;
+    printVector(v1);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+### 5.5 常用生成算法
+
++ 算术生成算法属于小型算法, 使用时包含的的头文件为: #include 《numeric》
++ 算法简介
+    1. accumulate // 累计求和
+    2. fill // 向容器中添加元素
+
+#### 5.5.1 accumulate
+
++ 功能描述
+    1. 计算区间内容器元素的和
++ accumulate(iterator beg, iterator end, value);
+    1. 计算容器元素的和
+    2. beg 开始迭代器
+    3. end 结束迭代器
+    4. value 起始值
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <numeric>
+
+// 常用算术生成算法
+void printVector(vector<int> &v)
+{
+    for (vector<int>::iterator it = v.begin(); it != v.end(); it++)
+        cout << *it << " ";
+    cout << endl;
+}
+void test01()
+{
+    vector<int> v1;
+    for (int i = 0; i <= 100; i++)
+    {
+        v1.push_back(i);
+    }
+    printVector(v1);
+    // 参数3: 起始累加值
+    int total = accumulate(v1.begin(), v1.end(), 0);
+    cout << "total: " << total << endl;
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 5.5.2 fill
+
++ 功能描述
+    1. 向容器中填充指定元素
++ fill(iterator beg, iterator end, value);
+    1. 向容器中填充指定元素
+    2. beg 开始迭代器
+    3. end 结束迭代器
+    4. value 填充元素
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <numeric>
+
+// 常用算术生成算法fill
+void printVector(vector<int> &v)
+{
+    for (vector<int>::iterator it = v.begin(); it != v.end(); it++)
+        cout << *it << " ";
+    cout << endl;
+}
+void test01()
+{
+    vector<int> v1(10);
+    printVector(v1);
+    fill(v1.begin(), v1.end(), 100);
+    printVector(v1);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+### 5.6 常用集合算法
+
++ 算法简介
+    1. set_intersection // 求两个容器的交集
+    2. set_union // 求两个容器的并集
+    3. set_difference // 求两个容器的差集
+
+#### 5.6.1 set_intersection
+
++ 功能描述
+    1. 求两个容器的交集
++ set_intersection(iterator beg1, iterator end1, iterator beg2, iterator end2, iterator dest);
+    1. 求两个容器的交集
+    2. 注意: 两个容器必须是有序序列
+    3. beg1 容器1开始迭代器
+    4. end1 容器1结束迭代器
+    5. beg2 容器2开始迭代器
+    6. end2 容器2结束迭代器
+    7. dest 目标容器开始迭代器
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+
+// 常用集合算法set_intersection
+void printVector(vector<int> &v)
+{
+    for (vector<int>::iterator it = v.begin(); it != v.end(); it++)
+        cout << *it << " ";
+    cout << endl;
+}
+void test01()
+{
+    vector<int> v1;
+    vector<int> v2;
+    for (int i = 0; i < 10; i++)
+    {
+        v1.push_back(i);
+        v2.push_back(i * i);
+    }
+    printVector(v1);
+    printVector(v2);
+    vector<int> vTarget;
+    set_intersection(v1.begin(), v1.end(), v2.begin(), v2.end(), back_inserter(vTarget));
+    printVector(vTarget);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 5.6.2 set_union
+
++ 功能描述
+    1. 求两个容器的并集
++ set_union(iterator beg1, iterator end1, iterator beg2, iterator end2, iterator dest);
+    1. 求两个容器的并集
+    2. 注意: 两个容器必须是有序序列
+    3. beg1 容器1开始迭代器
+    4. end1 容器1结束迭代器
+    5. beg2 容器2开始迭代器
+    6. end2 容器2结束迭代器
+    7. dest 目标容器开始迭代器
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+
+// 常用集合算法set_union
+void printVector(vector<int> &v)
+{
+    for (vector<int>::iterator it = v.begin(); it != v.end(); it++)
+        cout << *it << " ";
+    cout << endl;
+}
+void test01()
+{
+    vector<int> v1;
+    vector<int> v2;
+    for (int i = 0; i < 10; i++)
+    {
+        v1.push_back(i);
+        v2.push_back(i * i);
+    }
+    printVector(v1);
+    printVector(v2);
+    vector<int> vTarget;
+    set_union(v1.begin(), v1.end(), v2.begin(), v2.end(), back_inserter(vTarget));
+    printVector(vTarget);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
+
+#### 5.6.3 set_difference
+
++ 功能描述
+    1. 求两个容器的差集
++ set_difference(iterator beg1, iterator end1, iterator beg2, iterator end2, iterator dest);
+    1. 求两个容器的差集
+    2. 注意: 两个容器必须是有序序列
+    3. beg1 容器1开始迭代器
+    4. end1 容器1结束迭代器
+    5. beg2 容器2开始迭代器
+    6. end2 容器2结束迭代器
+    7. dest 目标容器开始迭代器
+
+```C++
+#include <iostream>
+using namespace std;
+#include <vector>
+#include <algorithm>
+
+// 常用集合算法set_difference
+void printVector(vector<int> &v)
+{
+    for (vector<int>::iterator it = v.begin(); it != v.end(); it++)
+        cout << *it << " ";
+    cout << endl;
+}
+void test01()
+{
+    vector<int> v1;
+    vector<int> v2;
+    for (int i = 0; i < 10; i++)
+    {
+        v1.push_back(i);
+        v2.push_back(i * i);
+    }
+    printVector(v1);
+    printVector(v2);
+    vector<int> vTarget1;
+    vector<int> vTarget2;
+    cout << "v1和v2的差集为: " << endl;
+    set_difference(v1.begin(), v1.end(), v2.begin(), v2.end(), back_inserter(vTarget1));
+    printVector(vTarget1);
+    cout << "v1和v2的差集为: " << endl;
+    set_difference(v2.begin(), v2.end(), v1.begin(), v1.end(), back_inserter(vTarget2));
+    printVector(vTarget2);
+}
+int main()
+{
+    test01();
+    return 0;
+}
+```
