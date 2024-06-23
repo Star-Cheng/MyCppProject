@@ -59,8 +59,18 @@
         "set": "cpp",
         "thread": "cpp",
         "cfenv": "cpp",
-        "cinttypes": "cpp"
+        "cinttypes": "cpp",
+        "bit": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "numbers": "cpp",
+        "codecvt": "cpp",
+        "condition_variable": "cpp",
+        "mutex": "cpp",
+        "semaphore": "cpp",
+        "stop_token": "cpp",
+        "variant": "cpp",
+        "climits": "cpp"
     },
-    "python.analysis.typeCheckingMode": "basic",
     // "cmake.sourceDirectory": "C:/Users/13359/Documents/CppProject/Pcl/00base"
 }
