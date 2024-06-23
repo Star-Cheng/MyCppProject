@@ -61,5 +61,6 @@
         "cfenv": "cpp",
         "cinttypes": "cpp"
     },
+    "python.analysis.typeCheckingMode": "basic",
     // "cmake.sourceDirectory": "C:/Users/13359/Documents/CppProject/Pcl/00base"
 }
