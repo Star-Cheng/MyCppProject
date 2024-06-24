@@ -34,10 +34,10 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                // "${file}",
-                "*.cpp",
+                "${file}",
+                // "*.cpp",
                 "-o",
-                "${workspaceFolder}/../build/${fileBasenameNoExtension}"
+                "${workspaceFolder}/../build/${workspaceFolderBasename}/${fileBasenameNoExtension}"
             ],
             "options": {
                 "cwd": "${fileDirname}"
