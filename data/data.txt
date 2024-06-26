@@ -1,0 +1,3 @@
+ming 18 man
+hong 19 woman
+wang 20 man

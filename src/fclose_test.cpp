@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
     ** FILE *__stream: 打开的一个文件
     ** return: 成功: 返回写入的字符, 失败: 返回EOF
     */
-    int puts_result = fputs("ello world", ioFile);
+    int puts_result = fputs("ello world\n", ioFile);
     if (puts_result == EOF)
     {
         printf("write string failed\n");
@@ -39,7 +39,21 @@ int main(int argc, char *argv[])
     {
         printf("write string success\n");
     }
-
+    /*
+    ** fprintf(FILE *__restrict __stream, const char *__restrict __fmt, ...)
+    ** const char *__restrict __fmt: 带格式化的长字符串
+    ** ...可变参数: 填入格式化的长字符串
+    ** return: 成功: 返回写入的字符, 不包含换行符; 失败: 返回EOF
+    */
+    int printf_result = fprintf(ioFile, "hello world\n");
+    if (printf_result == EOF)
+    {
+        printf("printf write string failed\n");
+    }
+    else
+    {
+        printf("printf write %d string success\n", printf_result);
+    }
     /* int fclose (FILE *__stream);
     ** return: 0: success
     **        -1: fail
