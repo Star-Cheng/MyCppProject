@@ -6,6 +6,7 @@
                 "${workspaceFolder}/**",
                 "/usr/include/pcl-1.10",
                 "/usr/include",
+                "/usr/include/**",
                 "/usr/include/flann",
                 "/usr/include/eigen3",
                 "/usr/include/boost",

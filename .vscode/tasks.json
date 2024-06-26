@@ -2,8 +2,8 @@
     "version": "2.0.0",
     "tasks": [
         // {
-        //     "label": "compile",
-        //     "command": "g++",
+        //     "label": "compile gcc",
+        //     "command": "gcc", // C语言编译器
         //     "args": [
         //         "-g",
         //         "${file}",
