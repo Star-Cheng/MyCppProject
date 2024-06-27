@@ -10,21 +10,21 @@ int main(int argc, char *argc[])
 }
 ```
 
-## gcc
+## 1 gcc
 
-### gcc预处理
+### 1.1 gcc预处理
 
 ```bash
 gcc -E Log.cpp -o Log.i
 ```
 
-### gcc编译
+### 1.2 gcc编译
 
 ```bash
 gcc -S Log.cpp -o Log.s
 ```
 
-### gcc汇编
+### 1.3 gcc汇编
 
 ```bash
 gcc -c Log.cpp -o Log.o
@@ -32,14 +32,14 @@ objdump -s Log.o # 查看main.o的section
 objdump -d Log.o # 查看main.o的汇编代码
 ```
 
-### 常见的section
+### 1.4 常见的section
 
 + 除了常见objdump -s Log.o 看到的集中section, 还有.data, .bss, .rodata
     1. .data: 包含初始化了的全局变量和静态变量
     2. .bss 包含未初始化的全局变量和静态变量
     3. .rodata: 包含只读数据
 
-### gcc链接
+### 1.5 gcc链接
 
 ```bash
 # 静态链接
@@ -56,7 +56,7 @@ gcc Log.o -L ./ -lhello -o Log3
 ./Log3
 ```
 
-## Makefile
+### 1.6 Makefile
 
 ```Makefile
 # Makefile内容通常一下三部分组成
@@ -82,3 +82,15 @@ say_hello.o: say_hello.h
 clean:
  rm -rf *.o Log
 ```
+
+## 2 系统调用
+
+### 2.1 常见系统调用
+
+1. open
+2. read
+3. write
+4. close
+5. exit
+
+## 3 进程处理

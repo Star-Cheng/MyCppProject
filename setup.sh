@@ -6,4 +6,4 @@ if [ ! -d "build" ]; then
 else
     echo "build directory already exists, skipping mkdir"
 fi
-mv data build/
+cp -r data/ build/
