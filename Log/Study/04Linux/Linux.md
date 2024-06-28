@@ -94,3 +94,65 @@ clean:
 5. exit
 
 ## 3 进程处理
+
+### 3.1 fork
+
+```C++
+#include <unistd.h>
+pid_t pid = fork();
+```
+
+### 3.2 execve
+
+```C++
+#include <unistd.h>
+#include <stdlib.h>
+char new_name[100] = "new student";
+char *args[] = {(char *)"/home/gym/code/CppProject/build/MyCppProject/erlou", new_name, NULL};
+char *envs[] = {NULL};
+int exR = execve(args[0], args, envs);
+if (exR == -1)
+{
+    perror("execve error");
+    exit(1);
+}
+```
+
+### 3.3 waitpid
+
+```C++
+#include <sys/wait.h>
+#include <unistd.h>
+pid_t pid = fork();
+waitpid(pid, NULL, 0);
+```
+
+## 4. 进程通信
+
++ 进程之间的内存是隔离的, 如果多个进程之间需要进行信息交换, 常用的方法有
+    1. Unix Domain Socket IPC
+    2. 管道(有名管道, 无名管道)
+    3. 共享内存
+    4. 消息队列
+    5. 信号量
+
+### 4.1 匿名管道(Pipe)
+
+1. 库函数perror(), errno
+
+```C++
+#include <stdio.h>
+#include <errno.h>
+int main(int argc, char const *argv[])
+{
+    /* void perror (const char *__s);
+    ** const char *__s: 自定义错误前缀
+    */
+    fopen("/opt","a+");
+    printf("erorr: %d\n",errno);
+    perror("open file failed");
+    return 0;
+}
+```
+
+### 4.2 进程间通信
