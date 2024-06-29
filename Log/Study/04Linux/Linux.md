@@ -220,4 +220,108 @@ int main(int argc, char const *argv[])
 }
 ```
 
-### 4.2 进程间通信
+### 4.2 有名管道(FIFO)
+
+#### 4.2.1 库函数mkfifo()
+
+```C++
+#include <sys/types.h>
+#include <sys/stat.h>
+int mkfifo(const char *pathname, mode_t mode);
+```
+
+#### 4.2.2 pipe_write.cpp
+
+```C++
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdio.h>
+#include <errno.h>
+#include <fcntl.h>
+
+int main(int argc, char *argv[])
+{
+    int fd;
+    char *pipe_path = (char *)"/home/gym/code/CppProject/MyCppProject/data/myfifo";
+    if (mkfifo(pipe_path, 0664) != 0)
+    {
+        perror("mkfifo");
+        // exit(EXIT_FAILURE);
+    }
+    // 对又名管道的特殊文件创建fd
+    fd = open(pipe_path, O_WRONLY);
+    if (fd == -1)
+    {
+        perror("open");
+        exit(EXIT_FAILURE);
+    }
+    char buf[100];
+    ssize_t read_num;
+    // 读取控制台数据写入管道当中
+    while ((read_num = read(STDIN_FILENO, buf, 100)) > 0)
+    {
+        write(fd, buf, read_num);
+    }
+    if (read_num < 0)
+    {
+        perror("read");
+        close(fd);
+        exit(EXIT_FAILURE);
+    }
+    printf("sent data to pipe over\n");
+    close(fd);
+    return 0;
+}
+```
+
+#### 4.2.3 pipe_read.cpp
+
+```C++
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <stdio.h>
+#include <errno.h>
+#include <fcntl.h>
+
+int main(int argc, char *argv[])
+{
+    int fd;
+    char *pipe_path = (char *)"/home/gym/code/CppProject/MyCppProject/data/myfifo";
+    // if (mkfifo(pipe_path, 0664) != 0)
+    // {
+    //     perror("mkfifo");
+    //     exit(EXIT_FAILURE);
+    // }
+    // 对又名管道的特殊文件创建fd
+    fd = open(pipe_path, O_RDONLY);
+    if (fd == -1)
+    {
+        perror("open");
+        exit(EXIT_FAILURE);
+    }
+    char buf[100];
+    ssize_t read_num;
+    // 读取管道信息写入控制台
+    while ((read_num = read(fd, buf, 100)) > 0)
+    {
+        write(STDIN_FILENO, buf, read_num);
+    }
+    if (read_num < 0)
+    {
+        perror("read");
+        close(fd);
+        exit(EXIT_FAILURE);
+    }
+    printf("received data from pipe over\n");
+    close(fd);
+    return 0;
+}
+```
