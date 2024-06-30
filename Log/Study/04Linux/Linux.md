@@ -127,7 +127,7 @@ pid_t pid = fork();
 waitpid(pid, NULL, 0);
 ```
 
-## 4. 进程通信
+## 4 进程通信
 
 + 进程之间的内存是隔离的, 如果多个进程之间需要进行信息交换, 常用的方法有
     1. Unix Domain Socket IPC
@@ -325,3 +325,132 @@ int main(int argc, char *argv[])
     return 0;
 }
 ```
+
+### 4.3 共享内存
+
+#### 4.3.1 shm_open()和shm_unlink()
+
++ shm_open()可以开启一块内存共享对象, 我们可以像使用一般文件描述符一般使用这块内存对象
+
+```C++
+int shm_open(const char *name, int oflag, mode_t mode);
+int shm_unlink(const char *name);
+```
+
+### 4.3.2 truncate()和ftruncate()
+
++ truncate和ftruncate都可以将文件缩放到指定大小, 二者的行为类似: 如果文件被缩小, 截断部分的数据丢失, 如果文件空间被放大, 拓展的部分均为\0字符
+
+```C++
+int truncate(const char *path, off_t length);
+int ftruncate(int fd, off_t length);
+```
+
+### 4.3.3 mmap()和munmap()
+
++ mmap系统调用可以将一组设备或者文件映射到内存地址
+
+```C++
+void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);
+int munmap(void *addr, size_t length);
+```
+
+```C++
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <sys/wait.h>
+#include <string.h>
+
+int main(int argc, char *argv[])
+{
+    // 1. 创建共享内存对象
+    // char *shm_name = (char *)"letter";
+    char shm_name[100] = {0};
+    sprintf(shm_name, "/letter%d", getpid());
+    int fd;
+    fd = shm_open(shm_name, O_RDWR | O_CREAT, 0644);
+    if (fd < 0)
+    {
+        perror("shm_open");
+        exit(EXIT_FAILURE);
+    }
+    // 2. 设置共享内存大小
+    ftruncate(fd, 1024);
+    // 3. 内存映射
+    char *share = (char *)mmap(NULL, 1024, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    if (share)
+    {
+        perror("mmap");
+        exit(EXIT_FAILURE);
+    }
+    // 映射完成之后, 关闭fd连接, 不是释放
+    close(fd);
+
+    // 4. 使用内存映射实现进程间的通讯
+    pid_t pid = fork();
+    if (pid < 0)
+    {
+        perror("fork");
+        exit(EXIT_FAILURE);
+    }
+    if (pid == 0)
+    {
+        // 子进程
+        strcpy(share, "you are a good people\n");
+        printf("new student %d complete reply\n", getpid());
+    }
+    else
+    {
+        // 父进程
+        // sleep(1);
+        waitpid(pid, NULL, 0);
+        printf("old student %d received new student %d reply: %s\n", getpid(), pid, share);
+    }
+    // 释放映射区
+    int re = munmap(share, 1024);
+    if (re < 0)
+    {
+        perror("munmap");
+        exit(EXIT_FAILURE);
+    }
+
+    // 6. 释放共享内粗对象
+    shm_unlink(shm_name);
+    return 0;
+}
+```
+
+### 4.4 消息队列
+
+#### 4.4.1. 相关数据类型
+
+1. mqd_t
+2. struct mq_attr
+
+```C++
+#include <mqueue.h>
+mqd_t mq_open(const char *name, int oflag, mode_t mode, struct mq_attr *attr);
+struct mq_attr
+{
+    long mq_flags;
+    long mq_maxmsg;
+    long mq_msgsize;
+    long mq_curmsgs;
+};
+struct timespec
+{
+    time_t tv_sec;
+    long tv_nsec;
+};
+```
+
+#### 4.4.2 相关系统调用
+
+1. mq_open()
+2. mq_timesend()
+3. mq_timedreceive()
+4. mq_unlink()
+5. clock_gettime()

@@ -28,7 +28,7 @@ erlou: erlou.cpp
 # rm ./fopen_test
 	-rm $@
 
-pipe_write: pipe_write.c
+pipe_write: pipe_write.cpp
 # gcc -o fopen_test fopen_test.cpp
 # $@: 目标文件名
 # $^: 依赖文件名
@@ -38,7 +38,7 @@ pipe_write: pipe_write.c
 # rm ./fopen_test
 # -rm $@
 
-pipe_read: pipe_read.c
+pipe_read: pipe_read.cpp
 # gcc -o fopen_test fopen_test.cpp
 # $@: 目标文件名
 # $^: 依赖文件名
