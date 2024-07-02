@@ -56,7 +56,7 @@
         {
             "label": "make build", //编译的项目名，build
             "type": "shell",
-            "command": "bash setup.sh; cd ../build ;cmake ../CppProject -DCMAKE_EXPORT_COMPILE_COMMANDS=1 ;make", //编译命令
+            "command": "bash setup.sh; cd ../build ;cmake ../MyCppProject -DCMAKE_EXPORT_COMPILE_COMMANDS=1 ;make", //编译命令
             "group": {
                 "kind": "build",
                 "isDefault": true

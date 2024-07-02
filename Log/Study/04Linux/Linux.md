@@ -454,3 +454,57 @@ struct timespec
 3. mq_timedreceive()
 4. mq_unlink()
 5. clock_gettime()
+
+### 4.5 信号
+
+#### 4.5.1 信号简介
+
++ 在Linux中, 信号是一种用于通知进程发生了某种时间的机制
++ 常见的信号包括
+    1. **SIGINT(2)**: **Ctrl+C**时发送给控制台的信号, 常用于**请求进程终止**
+    2. **SIGKILL(9)**: 这是一种**强制终止信号**, 它会立即终止目标进程, 且不能捕获或忽略
+    3. **SIGTERM(15)**: 这是一种用于请求进程终止的信号, 通常由系统管理员或其他进程发送给目标进程
+    4. SIGUSR1(10): 这是一种用户自定义信号, 可以由程序发送给其他进程
+    5. SIGSEGV(11): 这是一种表示进程非法内存访问的信号, 通常是由于进程尝试访问分配的内存或者试图执行非法指令而导致的
+    6. SIGALRM(14): 这是一种表示进程定时器到期的信号, 通常由系统定时器发送给目标进程
++ 可用通过kill -l 查看所有信号
+
+#### 4.5.2 信号处理例程
+
+```C++
+#include <signal.h>
+typedef void (*sighandler_t)(int);
+/*
+** int signum: 要处理的信号
+** sighandler_t handler: 当收到对应的signum信号时, 要调用的函数
+** return: sighandler_t: 返回之前的信号处理函数, 如果错误返回SEG_ERR
+*/
+sighandler_t signal(int signum, sighandler_t handler);
+```
+
+```C++
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <signal.h>
+
+void sigint_handler(int signum)
+{
+    printf("received %d signal, stop process\n", signum);
+    exit(signum);
+}
+int main(int argc, char *argv[])
+{
+    if (signal(SIGINT, sigint_handler) == SIG_ERR)
+    {
+        printf("can't catch SIGINT\n");
+        return 1;
+    }
+    while (1)
+    {
+        sleep(1);
+        printf("sleep 1 second\n");
+    }
+    return 0;
+}
+```
