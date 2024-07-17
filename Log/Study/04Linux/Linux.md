@@ -508,3 +508,18 @@ int main(int argc, char *argv[])
     return 0;
 }
 ```
+
+## 5 线程处理
+
+### 5.1 线程简介
+
++ 线程是进程的一个子集, 它是进程的一个执行流, 可以理解为进程的一个子进程
+
+### 5.2 线程控制
+
+#### 5.2.1 线程创建
+
+```C++
+#include <pthread.h>
+int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine) (void *), void *arg);
+```
