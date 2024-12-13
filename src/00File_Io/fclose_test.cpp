@@ -2,7 +2,7 @@
 
 int main(int argc, char *argv[])
 {
-    FILE *ioFile = fopen("../data/hello.txt", "w+");
+    FILE *ioFile = fopen("../../data/hello.txt", "w+");
     if (ioFile == NULL)
     {
         printf("open file failed\n");
