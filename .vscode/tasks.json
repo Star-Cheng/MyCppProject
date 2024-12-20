@@ -87,6 +87,16 @@
             }
         },
         {
+            "label": "make-external", //编译的项目名，build
+            "type": "shell",
+            // "command": "mkdir ${fileDirname}/build ;cd ${fileDirname}/build ;cmake ..  ;make", //编译命令
+            "command": "mkdir -p ${workspaceFolder}/../build/${workspaceFolderBasename}/${fileBasenameNoExtension} ;cd ${workspaceFolder}/../build/${workspaceFolderBasename}/${fileBasenameNoExtension} ;cmake ${fileDirname}  ;make -j16", //编译命令
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
             "label": "make build", //编译的项目名，build
             "type": "shell",
             "command": "mkdir ${fileDirname}/build ;cd ${fileDirname}/build ;cmake ..  ;make", //编译命令

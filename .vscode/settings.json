@@ -70,7 +70,9 @@
         "semaphore": "cpp",
         "stop_token": "cpp",
         "variant": "cpp",
-        "climits": "cpp"
+        "climits": "cpp",
+        "core": "cpp",
+        "dense": "cpp"
     },
     // "cmake.sourceDirectory": "C:/Users/13359/Documents/CppProject/Pcl/00base"
 }
