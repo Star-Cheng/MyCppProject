@@ -1,0 +1,37 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        // See https://go.microsoft.com/fwlink/?LinkId=733558
+        // for the documentation about the tasks.json format
+        {
+            "label": "make external", //编译的项目名，build
+            "type": "shell",
+            // "command": "mkdir ${fileDirname}/build ;cd ${fileDirname}/build ;cmake ..  ;make", //编译命令
+            "command": "mkdir -p ${workspaceFolder}/../build/${workspaceFolderBasename}/${fileBasenameNoExtension} ;cd ${workspaceFolder}/../build/${workspaceFolderBasename}/${fileBasenameNoExtension} ;cmake ${fileDirname}  ;make -j16", //编译命令
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "clean",
+            "type": "shell",
+            "command": "make clean",
+        },
+        {
+            "label": "make build", //编译的项目名，build
+            "type": "shell",
+            "command": "mkdir ${fileDirname}/build ;cd ${fileDirname}/build ;cmake ..  ;make -j16", //编译命令
+            // "command": "mkdir -p ${workspaceFolder}/../build/${workspaceFolderBasename}/${fileBasenameNoExtension} ;cd ${workspaceFolder}/../build/${workspaceFolderBasename}/${fileBasenameNoExtension} ;cmake ${fileDirname}  ;make -j16", //编译命令
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "clean",
+            "type": "shell",
+            "command": "make clean",
+        },
+    ]
+}
