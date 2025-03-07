@@ -72,7 +72,8 @@
         "variant": "cpp",
         "climits": "cpp",
         "core": "cpp",
-        "dense": "cpp"
+        "dense": "cpp",
+        "ranges": "cpp"
     },
     // "cmake.sourceDirectory": "C:/Users/13359/Documents/CppProject/Pcl/00base"
 }
